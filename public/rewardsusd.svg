@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="560" height="560" viewBox="0 0 560 560">
+  <defs>
+    <filter id="Ellipse_4" x="39" y="42" width="482" height="482" filterUnits="userSpaceOnUse">
+      <feOffset dy="3" input="SourceAlpha"/>
+      <feGaussianBlur stdDeviation="3" result="blur"/>
+      <feFlood flood-opacity="0.161"/>
+      <feComposite operator="in" in2="blur"/>
+      <feComposite in="SourceGraphic"/>
+    </filter>
+    <filter id="Ellipse_4-2" x="39" y="42" width="482" height="482" filterUnits="userSpaceOnUse">
+      <feOffset dy="3" input="SourceAlpha"/>
+      <feGaussianBlur stdDeviation="3" result="blur-2"/>
+      <feFlood flood-opacity="0.161" result="color"/>
+      <feComposite operator="out" in="SourceGraphic" in2="blur-2"/>
+      <feComposite operator="in" in="color"/>
+      <feComposite operator="in" in2="SourceGraphic"/>
+    </filter>
+  </defs>
+  <g id="Group_30" data-name="Group 30" transform="translate(-260 -260)">
+    <circle id="Ellipse_3" data-name="Ellipse 3" cx="280" cy="280" r="280" transform="translate(260 260)" fill="#fff"/>
+    <g data-type="innerShadowGroup">
+      <g transform="matrix(1, 0, 0, 1, 260, 260)" filter="url(#Ellipse_4)">
+        <circle id="Ellipse_4-3" data-name="Ellipse 4" cx="232" cy="232" r="232" transform="translate(48 48)" fill="#fff"/>
+      </g>
+      <g transform="matrix(1, 0, 0, 1, 260, 260)" filter="url(#Ellipse_4-2)">
+        <circle id="Ellipse_4-4" data-name="Ellipse 4" cx="232" cy="232" r="232" transform="translate(48 48)" fill="#fff"/>
+      </g>
+    </g>
+    <g id="Group_23" data-name="Group 23" transform="translate(-110.231 -507.704)">
+      <g id="Group_5" data-name="Group 5" transform="translate(512.75 908.962)">
+        <g id="Group_3" data-name="Group 3">
+          <line id="Line_4" data-name="Line 4" y1="277.484" transform="translate(138.742)" fill="none" stroke="red" stroke-width="24"/>
+          <line id="Line_8" data-name="Line 8" y1="85.768" transform="translate(47.929 55.497)" fill="none" stroke="red" stroke-width="24"/>
+          <line id="Line_9" data-name="Line 9" y1="80.723" transform="translate(229.555 131.174)" fill="none" stroke="red" stroke-width="24"/>
+          <line id="Line_5" data-name="Line 5" x2="272.439" transform="translate(2.523 211.897)" fill="none" stroke="red" stroke-width="24"/>
+          <line id="Line_6" data-name="Line 6" x2="272.439" transform="translate(0 131.174)" fill="none" stroke="red" stroke-width="24"/>
+          <line id="Line_7" data-name="Line 7" x2="272.439" transform="translate(2.523 55.497)" fill="none" stroke="red" stroke-width="24"/>
+        </g>
+      </g>
+    </g>
+  </g>
+</svg>

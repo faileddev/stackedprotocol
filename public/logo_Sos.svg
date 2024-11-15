@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="612.754" height="145.391" viewBox="0 0 612.754 145.391">
+  <g id="Group_25" data-name="Group 25" transform="translate(-233.623 -467.305)">
+    <g id="Group_23" data-name="Group 23" transform="translate(-279.127 -441.657)">
+      <g id="Group_5" data-name="Group 5" transform="translate(512.75 908.962)">
+        <g id="Group_3" data-name="Group 3">
+          <line id="Line_4" data-name="Line 4" y1="145.391" transform="translate(72.696)" fill="none" stroke="red" stroke-width="12"/>
+          <line id="Line_8" data-name="Line 8" y1="44.939" transform="translate(25.113 29.078)" fill="none" stroke="red" stroke-width="12"/>
+          <line id="Line_9" data-name="Line 9" y1="42.296" transform="translate(120.278 68.73)" fill="none" stroke="red" stroke-width="12"/>
+          <line id="Line_5" data-name="Line 5" x2="142.748" transform="translate(1.322 111.026)" fill="none" stroke="red" stroke-width="12"/>
+          <line id="Line_6" data-name="Line 6" x2="142.748" transform="translate(0 68.73)" fill="none" stroke="red" stroke-width="12"/>
+          <line id="Line_7" data-name="Line 7" x2="142.748" transform="translate(1.322 29.078)" fill="none" stroke="red" stroke-width="12"/>
+        </g>
+      </g>
+    </g>
+    <text id="STACKS_OF_SATS" data-name="STACKS OF SATS" transform="translate(636.377 542.5)" fill="red" font-size="48" font-family="Montserrat-Bold, Montserrat" font-weight="700"><tspan x="-209.568" y="0">STACKS OF SATS</tspan></text>
+    <text id="PROTOCOL" transform="translate(636.377 577.5)" fill="red" font-size="24" font-family="Montserrat-Medium, Montserrat" font-weight="500" letter-spacing="1.5em"><tspan x="-195.936" y="0">PROTOCOL</tspan></text>
+  </g>
+</svg>
