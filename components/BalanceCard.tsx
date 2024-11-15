@@ -155,22 +155,7 @@ const balanceCard: React.FC = () => {
 
     const [price, setPrice] = useState<string | null>(null);
     
-    useEffect(() => {
-        const fetchTokenPriceFromOracle = async () => {
-            try {
-                const provider = new JsonRpcProvider("https://base-mainnet.infura.io/v3/65ff1bcf95cc4a6a9cf9c0c81fb9896a");
-                const oracleContract = new Contract(ORACLE_CONTRACT_ADDRESS, ORACLE_CONTRACT_ABI, provider);
-                const priceData = await oracleContract.getTokenUsdPrice();
-                const formattedPrice = parseFloat(formatUnits(priceData, 18));
-                setTokenPrice(formattedPrice);
-            } catch (error) {
-                console.error("Error fetching price from Oracle:", error);
-                setTokenPrice(null);
-            }
-        };
-
-        fetchTokenPriceFromOracle();
-    }, []);
+    
 
     // Calculate receiveAmount in USD
     useEffect(() => {
