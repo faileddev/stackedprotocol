@@ -1,3 +1,5 @@
+'use client'
+
 import { useActiveAccount, useReadContract } from "thirdweb/react";
 import { SUSD_CONTRACT, TOKEN_CONTRACT } from "../utils/constants";
 import { balanceOf } from "thirdweb/extensions/erc20";
