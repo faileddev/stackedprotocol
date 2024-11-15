@@ -14,26 +14,12 @@ import DAI from "../public/multi-collateral-dai-dai-logo.svg"
 import SOS from "../public/red logo.svg"
 
 
-import { Contract, ethers, formatUnits, JsonRpcProvider, parseUnits } from "ethers";
+import { Contract, ethers, formatUnits, parseUnits } from "ethers";
 
 
 
 
-const ORACLE_CONTRACT_ADDRESS = "0xaCc98Eeaa31fF2bEE5D670Cd874E5e44Fa707eE4";
-const ORACLE_CONTRACT_ABI = [
-  {
-    "inputs": [
-      { "internalType": "address", "name": "_pair", "type": "address" },
-      { "internalType": "address", "name": "_ethUsdPriceFeed", "type": "address" },
-      { "internalType": "address", "name": "_token", "type": "address" },
-      { "internalType": "address", "name": "_weth", "type": "address" },
-      { "internalType": "uint8", "name": "_tokenDecimals", "type": "uint8" }
-    ],
-    "stateMutability": "nonpayable",
-    "type": "constructor"
-  },
-  { "inputs": [], "name": "getTokenUsdPrice", "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }], "stateMutability": "view", "type": "function" },
-];
+
 
 
 
@@ -154,22 +140,7 @@ const Mint: React.FC = () => {
 
     const [price, setPrice] = useState<string | null>(null);
     
-    useEffect(() => {
-        const fetchTokenPriceFromOracle = async () => {
-            try {
-                const provider = new JsonRpcProvider("https://base-mainnet.infura.io/v3/65ff1bcf95cc4a6a9cf9c0c81fb9896a");
-                const oracleContract = new Contract(ORACLE_CONTRACT_ADDRESS, ORACLE_CONTRACT_ABI, provider);
-                const priceData = await oracleContract.getTokenUsdPrice();
-                const formattedPrice = parseFloat(formatUnits(priceData, 18));
-                setTokenPrice(formattedPrice);
-            } catch (error) {
-                console.error("Error fetching price from Oracle:", error);
-                setTokenPrice(null);
-            }
-        };
-
-        fetchTokenPriceFromOracle();
-    }, []);
+    
 
     // Calculate receiveAmount in USD
     useEffect(() => {
