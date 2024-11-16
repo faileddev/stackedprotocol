@@ -2,32 +2,29 @@
 
 import Image from "next/image";
 import { useEffect, useState } from "react";
-import DAI from "../public/multi-collateral-dai-dai-logo.svg"
+import SOS from "../public/red logo.svg"
 
-import sUSD from "../public/sUSD.svg"
+
 import ETH from "../public/ethereum-eth-logo.svg"
 
 
 import { approve, balanceOf } from "thirdweb/extensions/erc20";
 import { TransactionButton, useActiveAccount, useReadContract, useWalletBalance } from "thirdweb/react";
-import { TOKEN_CONTRACT, STAKE_CONTRACT, DAI_CONTRACT, LENDING_POOL_CONTRACT, client, chain } from "../utils/constants";
+import { STAKE_CONTRACT, TOKEN_CONTRACT, LENDING_POOL_CONTRACT, client, chain } from "../utils/constants";
 import { prepareContractCall, readContract, toEther, toWei } from "thirdweb";
 import { addEvent } from "thirdweb/extensions/farcaster/keyRegistry";
 import Link from "next/link";
 import { getEthBalance } from "thirdweb/extensions/multicall3";
-import DaiBorrowCard from "./DaiBorrowCard";
-import DaiUserBorrowInfo from "./DaiUserBorrowInfo";
-import DaiRepayCard from "./DaiRepayCard";
-import DaiLendInfo from "./DaiLendInfo";
+import SOSLendCard from "./SOSLendCard";
 
 
-const DaiLend: React.FC = () => {
+const SosLend: React.FC = () => {
 
     const account = useActiveAccount();
     const [healthFactor, setHealthFactor] = useState<string | null>(null);
     const liquidationThreshold = 80; // Example liquidation threshold in percentage
 
-    const DAIContract = "0x50c5725949A6F0c72E6C4a641F24049A917DB0Cb";
+    const SOSContract = "0xf63Fca327C555408819e26eDAc30F83E55a119f4";
     const [userCollateralBalance, setUserCollateralBalance] = useState<number | null>(null); // Collateral balance in the asset
 
     const [borrowableAmount, setBorrowableAmount] = useState<number | null>(null);
@@ -58,7 +55,7 @@ const DaiLend: React.FC = () => {
         {
             contract: LENDING_POOL_CONTRACT,
             method: "getAccountBalances",
-            params: [ account?.address || "" , DAIContract],
+            params: [ account?.address || "" , SOSContract],
             queryOptions: {
                 enabled: !!account
             }
@@ -76,7 +73,7 @@ const DaiLend: React.FC = () => {
         {
             contract: LENDING_POOL_CONTRACT,
             method: "getCollateralValueInUSD",
-            params: [ account?.address || "" , DAIContract],
+            params: [ account?.address || "" , SOSContract],
             queryOptions: {
                 enabled: !!account
             }
@@ -92,13 +89,12 @@ const DaiLend: React.FC = () => {
         {
             contract: LENDING_POOL_CONTRACT,
             method: "getPrice",
-            params: [DAIContract],
+            params: [SOSContract],
             queryOptions: {
                 enabled: !!account
             }
        
     });
-
 
     const { 
         data: incurredInterest, 
@@ -109,7 +105,7 @@ const DaiLend: React.FC = () => {
         {
             contract: LENDING_POOL_CONTRACT,
             method: "getInterestIncurred",
-            params: [ account?.address || "" , DAIContract],
+            params: [ account?.address || "" , SOSContract],
             queryOptions: {
                 enabled: !!account
             }
@@ -125,7 +121,7 @@ const DaiLend: React.FC = () => {
         {
             contract: LENDING_POOL_CONTRACT,
             method: "totalDeposits",
-            params: [DAIContract],
+            params: [SOSContract],
             queryOptions: {
                 enabled: !!account
             }
@@ -141,7 +137,7 @@ const DaiLend: React.FC = () => {
         {
             contract: LENDING_POOL_CONTRACT,
             method: "totalBorrows",
-            params: [DAIContract],
+            params: [SOSContract],
             queryOptions: {
                 enabled: !!account
             }
@@ -157,7 +153,7 @@ const DaiLend: React.FC = () => {
         {
             contract: LENDING_POOL_CONTRACT,
             method: "calculateInterestRate",
-            params: [DAIContract],
+            params: [SOSContract],
             queryOptions: {
                 enabled: !!account
             }
@@ -182,13 +178,13 @@ const DaiLend: React.FC = () => {
 
 
     const { 
-        data: DAIBalance, 
-        isLoading: loadingDAIBalance,
-        refetch: refetchDAIBalance
+        data: SOSBalance, 
+        isLoading: loadingSOSBalance,
+        refetch: refetchSOSBalance
     } = useReadContract (
         balanceOf,
         {
-            contract: DAI_CONTRACT,
+            contract: TOKEN_CONTRACT,
             address: account?.address || "",
             queryOptions: {
                 enabled: !!account
@@ -205,14 +201,14 @@ const DaiLend: React.FC = () => {
     
     const formattedCollateralDollarValue = (Number(CollateralDollarValue) / 1e18).toFixed(2);
     const currentTime = Math.floor(Date.now() / 1000);  // Current time in seconds
-    const assetPrice = rawAssetPrice ? (Number(rawAssetPrice) / 1e8).toFixed(2) : null; // Divide by 1e8 and format to 2 decimals
+    const assetPrice = rawAssetPrice ? (Number(rawAssetPrice) / 1e18).toFixed(6) : null; // Divide by 1e8 and format to 2 decimals
     const localizedAssetPrice = assetPrice 
-    ? Number(assetPrice).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) 
+    ? Number(assetPrice).toLocaleString(undefined, { minimumFractionDigits: 18, maximumFractionDigits: 18 }) 
     : null;
     
 
-    const DAIBalanceInUSD = DAIBalance && assetPrice 
-    ? (truncate(toEther(DAIBalance), 4) * Number(assetPrice)).toFixed(2) 
+    const SOSBalanceInUSD = SOSBalance && assetPrice 
+    ? (truncate(toEther(SOSBalance), 4) * Number(assetPrice)).toFixed(2) 
     : "0.00";
 
    
@@ -230,10 +226,6 @@ const DaiLend: React.FC = () => {
     ? (truncate(toEther(totalDeposits), 4) * Number(assetPrice)).toFixed(2) 
     : "0.00";
     
-    const totalBorrowsInUSD = totalBorrows && assetPrice 
-    ? (truncate(toEther(totalBorrows), 4) * Number(assetPrice)).toFixed(2) 
-    : "0.00";
-
     const [depositAPR, setDepositAPR] = useState<string>("0.00");
 
 useEffect(() => {
@@ -367,7 +359,7 @@ function calculateBorrowLimitInAsset(
                         >
                             
                             <Image style={{height: "36px", width: "36px", marginLeft: "5px"}}
-                    src={DAI}
+                    src={SOS}
                     alt='logo'
                     />      
                         <div style={{ marginLeft: "5px"}}>
@@ -377,7 +369,8 @@ function calculateBorrowLimitInAsset(
                                 Price:
                             </p>
                             <h3>
-                            {localizedAssetPrice}
+                            
+                            {assetPrice}
                             </h3>
                         </div>
                             
@@ -386,8 +379,8 @@ function calculateBorrowLimitInAsset(
                         <div style={{textAlign: "right"}}>
                             
                             
-                            <h1>DAI</h1>
-                            <p style={{ fontSize: "12px" }}>DAI Stablecoin</p>
+                            <h1>SOS</h1>
+                            <p style={{ fontSize: "12px" }}>Stacks Of Sats</p>
                         </div>
                     </div>
                     
@@ -395,13 +388,13 @@ function calculateBorrowLimitInAsset(
                     <div style={{
                         display: "flex",
                         flexDirection: "column",
+                        justifyContent: "space-between",
+                        alignContent: "left",
+                        alignItems: "left",
                         marginTop: "40px",
                     }}>
-                        <div style={{
-                            width: "100%"
-                            }}>
-                            <DaiBorrowCard />
-                        </div>
+                        <SOSLendCard />
+                         
                         <div style={{
                             display: "flex",
                             flexDirection: "column",
@@ -499,12 +492,12 @@ function calculateBorrowLimitInAsset(
                         }}>
                             
                             <h1>
-                                Collaterize DAI
+                                Collaterize SOS
                             </h1>
                             <p style={{
                                 marginTop: "10px"
                             }}>
-                            By collateralizing your DAI, you can unlock its full potential on our platform. When you collateralize your DAI, it becomes a secure asset that allows you to borrow other tokens while keeping your funds working for you.
+                            By collateralizing your SOS, you can unlock its full potential on our platform. When you collateralize your SOS, it becomes a secure asset that allows you to borrow other tokens while keeping your funds working for you.
                             </p>
                             
                             
@@ -530,7 +523,7 @@ function calculateBorrowLimitInAsset(
                                     <p style={{
                                         marginLeft: "5px"
                                     }}>
-                                        {truncate(toEther(DAIBalance!),4).toLocaleString() } DAI
+                                        {truncate(toEther(SOSBalance!),4).toLocaleString() } SOS
                                     </p>
                                 </div>
                                 <div style={{
@@ -549,7 +542,7 @@ function calculateBorrowLimitInAsset(
                                                     truncate(toEther(collateralBalance[0] * BigInt(1)).toString(), 4).toLocaleString()
                                                     :
                                                     '0.00'
-                                                } DAI
+                                                } SOS
                                     
                                             </p>
                                 </div>
@@ -559,7 +552,7 @@ function calculateBorrowLimitInAsset(
 
 
                             <Image
-        src={DAI} // Logo source
+        src={SOS} // Logo source
         alt="logo"
         style={{ height: "24px", width: "24px", marginRight: "8px" }}
     />
@@ -621,14 +614,14 @@ function calculateBorrowLimitInAsset(
                             <p style={{
                                         marginTop: "10px"
                                     }}>
-                                        {truncate(toEther(DAIBalance!),4).toLocaleString() } DAI
+                                        {truncate(toEther(SOSBalance!),4).toLocaleString() } SOS
                                     
                                         <span style={{
                                     fontSize: "10px",
                                     color: "GrayText",
                                     marginLeft: "5px"}}
                                     >
-                                        ~ ${DAIBalanceInUSD}
+                                        ~ ${SOSBalanceInUSD}
                                         </span>
                                     
                                     </p>
@@ -668,7 +661,7 @@ function calculateBorrowLimitInAsset(
                                                     truncate(toEther(collateralBalance[0] * BigInt(1)).toString(), 4).toLocaleString()
                                                     :
                                                     '0.00'
-                                                } DAI
+                                                } SOS
                                         <span style={{
                                     fontSize: "10px",
                                     color: "GrayText",
@@ -719,7 +712,7 @@ function calculateBorrowLimitInAsset(
                                                     truncate(toEther(collateralBalance[2] * BigInt(1)).toString(), 4).toLocaleString()
                                                     :
                                                     '0.00'
-                                                } DAI
+                                                } SOS
                                     <span style={{
                                     fontSize: "10px",
                                     color: "GrayText",
@@ -776,7 +769,7 @@ function calculateBorrowLimitInAsset(
                                 <TransactionButton
                                 transaction={() => (
                                     approve ({
-                                        contract: DAI_CONTRACT,
+                                        contract: TOKEN_CONTRACT,
                                         spender: LENDING_POOL_CONTRACT.address,
                                         amount: depositAmount,
                                     })
@@ -789,13 +782,33 @@ function calculateBorrowLimitInAsset(
                                     marginTop: "10px",
                                 }}
                                 >Set Approval</TransactionButton>
+
+                                <TransactionButton style={{width:"100%", marginTop:"10px",}}
+                                 transaction={() => (
+                                    prepareContractCall({
+                                        contract: LENDING_POOL_CONTRACT,
+                                        method: "withdrawCollateral",
+                                        params: [TOKEN_CONTRACT.address, (toWei(depositAmount.toString()))],
+                                    })
+                                 )}
+                                 onTransactionConfirmed={() => {
+                                    setDepositAmount(100);
+                                    setDepositingState("init");
+                                    refetchSOSBalance;
+                                    refetchcollateralBalance;
+                                    setIsDepositing(false);
+                                 }}
+                                 
+                                >
+                                    Withdraw Collateral
+                                </TransactionButton>
                                 
                                 </>
 
                             ) : (
                                 <>
                                 <p style={{marginTop: "10px"}}>Collaterize</p>
-                                <h1 style={{ marginTop: "5px"}}>{depositAmount.toLocaleString()} DAI
+                                <h1 style={{ marginTop: "5px"}}>{depositAmount.toLocaleString()} SOS
                                                            
                                     </h1>
                                 
@@ -806,13 +819,13 @@ function calculateBorrowLimitInAsset(
                                     prepareContractCall({
                                         contract: LENDING_POOL_CONTRACT,
                                         method: "depositCollateral",
-                                        params: [DAI_CONTRACT.address, (toWei(depositAmount.toString()))],
+                                        params: [TOKEN_CONTRACT.address, (toWei(depositAmount.toString()))],
                                     })
                                  )}
                                  onTransactionConfirmed={() => {
                                     setDepositAmount(100);
                                     setDepositingState("init");
-                                    refetchDAIBalance;
+                                    refetchSOSBalance;
                                     refetchcollateralBalance;
                                     setIsDepositing(false);
                                  }}
@@ -891,13 +904,11 @@ function calculateBorrowLimitInAsset(
                             <h1>
                                 Repay Loan
                             </h1>
-                            
-                            <div style={{
-                                marginTop: "20px",
-                                width: "380px"
+                            <p style={{
+                                marginTop: "10px"
                             }}>
-                            <DaiRepayCard />
-                            </div>
+                            By collateralizing your SOS, you can unlock its full potential on our platform. When you collateralize your SOS, it becomes a secure asset that allows you to borrow other tokens while keeping your funds working for you.
+                            </p>
                             
                             
 
@@ -922,7 +933,7 @@ function calculateBorrowLimitInAsset(
                                     <p style={{
                                         marginLeft: "5px"
                                     }}>
-                                        {truncate(toEther(DAIBalance!),4).toLocaleString() } DAI
+                                        {truncate(toEther(SOSBalance!),4).toLocaleString() } SOS
                                     </p>
                                 </div>
                                 <div style={{
@@ -941,7 +952,7 @@ function calculateBorrowLimitInAsset(
                                                     truncate(toEther(collateralBalance[1] * BigInt(1)).toString(), 4).toLocaleString()
                                                     :
                                                     '0.00'
-                                                } DAI
+                                                } SOS
                                     
                                             </p>
                                 </div>
@@ -951,7 +962,7 @@ function calculateBorrowLimitInAsset(
 
 
                             <Image
-        src={DAI} // Logo source
+        src={SOS} // Logo source
         alt="logo"
         style={{ height: "24px", width: "24px", marginRight: "8px" }}
     />
@@ -985,8 +996,98 @@ function calculateBorrowLimitInAsset(
                                 <>
                                 
 
+<div style={{
+                            display: "flex",
+                            flexDirection: "row",
+                            width: "100%",
+                            marginTop: "10px",
+                            justifyContent: "space-between",
+                        }}>
+
+                            
+                        
+                        <div style={{
+                            display: "flex",
+                            flexDirection: "column",
+                            textAlign: "left"
+                            
+                        }} >
+                            <p style={{marginTop: "10px"}}>Wallet Balance:</p>
+                            
+                        </div>
+                        <div style={{
+                            display: "flex",
+                            flexDirection: "column",
+                            textAlign: "right"
+                            
+                        }} >
+                            <p style={{
+                                        marginTop: "10px"
+                                    }}>
+                                        {truncate(toEther(SOSBalance!),4).toLocaleString() } SOS
+                                    
+                                        <span style={{
+                                    fontSize: "10px",
+                                    color: "GrayText",
+                                    marginLeft: "5px"}}
+                                    >
+                                        ~ ${SOSBalanceInUSD}
+                                        </span>
+                                    
+                                    </p>
+                            
+                        </div>
+                        
+                        </div>
+
+                        <div style={{
+                            display: "flex",
+                            flexDirection: "row",
+                            width: "100%",
+                            justifyContent: "space-between",
+                        }}>
+
+                            
+                        
+                        <div style={{
+                            display: "flex",
+                            flexDirection: "column",
+                            textAlign: "left"
+                            
+                        }} >
+                            <p style={{marginTop: "10px"}}>Deposited Balance:</p>
+                            
+                        </div>
+                        <div style={{
+                            display: "flex",
+                            flexDirection: "column",
+                            textAlign: "right"
+                            
+                        }} >
+                            <p style={{
+                                        marginTop: "10px"
+                                    }}>
+                                                {collateralBalance ?
+                                                    truncate(toEther(collateralBalance[0] * BigInt(1)).toString(), 4).toLocaleString()
+                                                    :
+                                                    '0.00'
+                                                } SOS
+                                        <span style={{
+                                    fontSize: "10px",
+                                    color: "GrayText",
+                                    marginLeft: "5px"}}
+                                    >
+                                        ~ ${depositedBalanceInUSD}
+                                        </span>
+                                            </p>
+                            
+                        </div>
 
                         
+                        
+                        
+                        
+                        </div>
 
 
                             
@@ -1005,7 +1106,7 @@ function calculateBorrowLimitInAsset(
                             textAlign: "left"
                             
                         }} >
-                            <p style={{marginTop: "10px"}}>Borrow APR:</p>
+                            <p style={{marginTop: "10px"}}>Collaterized Balance:</p>
                             
                         </div>
                         <div style={{
@@ -1017,8 +1118,19 @@ function calculateBorrowLimitInAsset(
                             <p style={{
                                         marginTop: "10px"
                                     }}>
-                                                {apr}% 
-                                    
+                                                {collateralBalance ?
+                                                    truncate(toEther(collateralBalance[2] * BigInt(1)).toString(), 4).toLocaleString()
+                                                    :
+                                                    '0.00'
+                                                } SOS
+                                    <span style={{
+                                    fontSize: "10px",
+                                    color: "GrayText",
+                                    marginLeft: "5px"}}
+                                    >
+
+                                       ~ ${formattedCollateralDollarValue}
+                                    </span>
                                             </p>
                             
                         </div>
@@ -1054,7 +1166,7 @@ function calculateBorrowLimitInAsset(
                             <p style={{
                                         marginTop: "10px"
                                     }}>
-                                                {truncate(toEther(incurredInterest!),4) } DAI
+                                                {truncate(toEther(incurredInterest!),4) } SOS
                                             </p>
                             
                         </div>
@@ -1067,7 +1179,7 @@ function calculateBorrowLimitInAsset(
                                 <TransactionButton
                                 transaction={() => (
                                     approve ({
-                                        contract: DAI_CONTRACT,
+                                        contract: TOKEN_CONTRACT,
                                         spender: LENDING_POOL_CONTRACT.address,
                                         amount: repayAmount,
                                     })
@@ -1080,13 +1192,32 @@ function calculateBorrowLimitInAsset(
                                     marginTop: "10px",
                                 }}
                                 >Set Approval</TransactionButton>
+                                <TransactionButton style={{width:"100%", marginTop:"10px",}}
+                                 transaction={() => (
+                                    prepareContractCall({
+                                        contract: LENDING_POOL_CONTRACT,
+                                        method: "withdrawCollateral",
+                                        params: [TOKEN_CONTRACT.address, (toWei(repayAmount.toString()))],
+                                    })
+                                 )}
+                                 onTransactionConfirmed={() => {
+                                    setDepositAmount(100);
+                                    setDepositingState("init");
+                                    refetchSOSBalance;
+                                    refetchcollateralBalance;
+                                    setIsDepositing(false);
+                                 }}
+                                 
+                                >
+                                    Withdraw Collateral
+                                </TransactionButton>
                                 
                                 </>
 
                             ) : (
                                 <>
                                 <p style={{marginTop: "10px"}}>Repay</p>
-                                <h1 style={{ marginTop: "5px"}}>{repayAmount.toLocaleString()} DAI
+                                <h1 style={{ marginTop: "5px"}}>{repayAmount.toLocaleString()} SOS
                                                            
                                     </h1>
                                 
@@ -1097,13 +1228,13 @@ function calculateBorrowLimitInAsset(
                                     prepareContractCall({
                                         contract: LENDING_POOL_CONTRACT,
                                         method: "repay",
-                                        params: [DAI_CONTRACT.address, (toWei(repayAmount.toString()))],
+                                        params: [TOKEN_CONTRACT.address, (toWei(repayAmount.toString()))],
                                     })
                                  )}
                                  onTransactionConfirmed={() => {
                                     setDepositAmount(100);
                                     setDepositingState("init");
-                                    refetchDAIBalance;
+                                    refetchSOSBalance;
                                     refetchcollateralBalance;
                                     setIsRepaying(false);
                                  }}
@@ -1180,12 +1311,12 @@ function calculateBorrowLimitInAsset(
         }}>
             
             <h1>
-                Lend DAI
+                Lend SOS
             </h1>
             <p style={{
                 marginTop: "10px"
             }}>
-            STACK up on your DAI and enjoy consistent returns, with interest rates designed to reward long-term stability and liquidity.
+            STACK up on your SOS and enjoy consistent returns, with interest rates designed to reward long-term stability and liquidity.
             </p>
             
             
@@ -1211,7 +1342,7 @@ function calculateBorrowLimitInAsset(
                     <p style={{
                         marginLeft: "5px"
                     }}>
-                        {truncate(toEther(DAIBalance!),4).toLocaleString() } DAI
+                        {truncate(toEther(SOSBalance!),4).toLocaleString() } SOS
                     </p>
                 </div>
                 <div style={{
@@ -1230,7 +1361,7 @@ function calculateBorrowLimitInAsset(
                                     truncate(toEther(collateralBalance[0] * BigInt(1)).toString(), 4).toLocaleString()
                                     :
                                     '0.00'
-                                } DAI
+                                } SOS
                     
                             </p>
                 </div>
@@ -1240,7 +1371,7 @@ function calculateBorrowLimitInAsset(
 
 
             <Image
-src={DAI} // Logo source
+src={SOS} // Logo source
 alt="logo"
 style={{ height: "24px", width: "24px", marginRight: "8px" }}
 />
@@ -1274,36 +1405,189 @@ padding: "5px"
                 <>
                 
 
+<div style={{
+            display: "flex",
+            flexDirection: "row",
+            width: "100%",
+            marginTop: "10px",
+            justifyContent: "space-between",
+        }}>
 
+            
+        
+        <div style={{
+            display: "flex",
+            flexDirection: "column",
+            textAlign: "left"
+            
+        }} >
+            <p style={{marginTop: "10px"}}>Wallet Balance:</p>
+            
+        </div>
+        <div style={{
+            display: "flex",
+            flexDirection: "column",
+            textAlign: "right"
+            
+        }} >
+            <p style={{
+                        marginTop: "10px"
+                    }}>
+                        {truncate(toEther(SOSBalance!),4).toLocaleString() } SOS
+                    
+                        <span style={{
+                    fontSize: "10px",
+                    color: "GrayText",
+                    marginLeft: "5px"}}
+                    >
+                        ~ ${SOSBalanceInUSD}
+                        </span>
+                    
+                    </p>
+            
+        </div>
+        
+        </div>
+
+        <div style={{
+            display: "flex",
+            flexDirection: "row",
+            width: "100%",
+            justifyContent: "space-between",
+        }}>
 
             
         
-        
+        <div style={{
+            display: "flex",
+            flexDirection: "column",
+            textAlign: "left"
+            
+        }} >
+            <p style={{marginTop: "10px"}}>Deposited Balance:</p>
+            
+        </div>
+        <div style={{
+            display: "flex",
+            flexDirection: "column",
+            textAlign: "right"
+            
+        }} >
+            <p style={{
+                        marginTop: "10px"
+                    }}>
+                                {collateralBalance ?
+                                    truncate(toEther(collateralBalance[0] * BigInt(1)).toString(), 4).toLocaleString()
+                                    :
+                                    '0.00'
+                                } SOS
+                        <span style={{
+                    fontSize: "10px",
+                    color: "GrayText",
+                    marginLeft: "5px"}}
+                    >
+                        ~ ${depositedBalanceInUSD}
+                        </span>
+                            </p>
+            
+        </div>
 
-       
+        
+        
+        
+        
+        </div>
 
 
             
-            
+            <div style={{
+            display: "flex",
+            flexDirection: "row",
+            width: "100%",
+            justifyContent: "space-between",
+        }}>
 
             
-                <div style={{
-                    width: "100%"
-                }}>
-               <DaiLendInfo />
-               </div>
+        
+        <div style={{
+            display: "flex",
+            flexDirection: "column",
+            textAlign: "left"
+            
+        }} >
+            <p style={{marginTop: "10px"}}>Pool Balance:</p>
+            
+        </div>
+        <div style={{
+            display: "flex",
+            flexDirection: "column",
+            textAlign: "right"
+            
+        }} >
+            <p style={{
+                        marginTop: "10px"
+                    }}>
+                                { 
+                                    truncate(toEther(totalDeposits! * BigInt(1)).toString(), 4).toLocaleString()
+                                    
+                                } SOS
+                    <span style={{
+                    fontSize: "10px",
+                    color: "GrayText",
+                    marginLeft: "5px"}}
+                    >
+
+                       ~ ${totalDepositsInUSD}
+                    </span>
+                            </p>
+            
+        </div>
 
         
         
         
-       
+        </div>
+        <div style={{
+            display: "flex",
+            flexDirection: "row",
+            width: "100%",
+            justifyContent: "space-between",
+        }}>
+
+            
+        
+        <div style={{
+            display: "flex",
+            flexDirection: "column",
+            textAlign: "left"
+            
+        }} >
+            <p style={{marginTop: "10px"}}>Lending APR:</p>
+            
+        </div>
+        <div style={{
+            display: "flex",
+            flexDirection: "column",
+            textAlign: "right"
+            
+        }} >
+            <p style={{
+                        marginTop: "10px"
+                    }}>
+                                {depositAPR}%
+                            </p>
+            
+        </div>
 
         
+        
+        
+        </div>
 
                 <TransactionButton
                 transaction={() => (
                     approve ({
-                        contract: DAI_CONTRACT,
+                        contract: TOKEN_CONTRACT,
                         spender: LENDING_POOL_CONTRACT.address,
                         amount: lendAmount,
                     })
@@ -1317,34 +1601,32 @@ padding: "5px"
                 }}
                 >Set Approval</TransactionButton>
 
-                <TransactionButton style={{width:"100%", marginTop:"10px",}}
-                 transaction={() => (
-                    prepareContractCall({
-                        contract: LENDING_POOL_CONTRACT,
-                        method: "withdraw",
-                        params: [DAI_CONTRACT.address, (toWei(lendAmount.toString()))],
-                    })
-                 )}
-                 onTransactionConfirmed={() => {
-                    setDepositAmount(100);
-                    setLendingState("init");
-                    refetchDAIBalance;
-                    refetchcollateralBalance;
-                    setIsLending(false);
-                 }}
-                 
-                >
-                    Withdraw
-                </TransactionButton>
+                                <TransactionButton style={{width:"100%", marginTop:"10px",}}
+                                 transaction={() => (
+                                    prepareContractCall({
+                                        contract: LENDING_POOL_CONTRACT,
+                                        method: "withdraw",
+                                        params: [TOKEN_CONTRACT.address, (toWei(lendAmount.toString()))],
+                                    })
+                                 )}
+                                 onTransactionConfirmed={() => {
+                                    setLendAmount(100);
+                                    setLendingState("init");
+                                    refetchSOSBalance;
+                                    refetchcollateralBalance;
+                                    setIsLending(false);
+                                 }}
+                                 
+                                >
+                                    Withdraw
+                                </TransactionButton>
                 
                 </>
-                
-                
 
             ) : (
                 <>
                 <p style={{marginTop: "10px"}}>Lend</p>
-                <h1 style={{ marginTop: "5px"}}>{lendAmount.toLocaleString()} DAI
+                <h1 style={{ marginTop: "5px"}}>{lendAmount.toLocaleString()} SOS
                                            
                     </h1>
                 
@@ -1355,13 +1637,13 @@ padding: "5px"
                     prepareContractCall({
                         contract: LENDING_POOL_CONTRACT,
                         method: "deposit",
-                        params: [DAI_CONTRACT.address, (toWei(lendAmount.toString()))],
+                        params: [TOKEN_CONTRACT.address, (toWei(lendAmount.toString()))],
                     })
                  )}
                  onTransactionConfirmed={() => {
                     setDepositAmount(100);
                     setLendingState("init");
-                    refetchDAIBalance;
+                    refetchSOSBalance;
                     refetchcollateralBalance;
                     setIsLending(false);
                  }}
@@ -1412,5 +1694,5 @@ padding: "5px"
                     </div>
                     )
                     };
-                    export default DaiLend;
+                    export default SosLend;
                     

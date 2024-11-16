@@ -15,6 +15,7 @@ import { prepareContractCall, readContract, toEther, toWei } from "thirdweb";
 import { addEvent } from "thirdweb/extensions/farcaster/keyRegistry";
 import Link from "next/link";
 import { getEthBalance } from "thirdweb/extensions/multicall3";
+import SusdLendCard from "./SusdLendCard";
 
 
 const SusdLend: React.FC = () => {
@@ -391,101 +392,8 @@ function calculateBorrowLimitInAsset(
                         alignItems: "left",
                         marginTop: "40px",
                     }}>
-                        <div style={{
-                            display:"flex",
-                            flexDirection: "row",
-                            justifyContent: "space-between",
-                            }}>
-                            <div style={{
-                                display: "flex",
-                                flexDirection: "column",
-                                justifyContent: "end",
-                                alignItems: "start"
-                            }}>
-                                <p style={{fontSize: "10px"}}>
-                                   Wallet Balance:
-                            </p>
-                            
-                            
-                                      <h2>{truncate(toEther(SUSDBalance!),4).toLocaleString() }<span style={{fontSize: "10px"}}> sUSD</span>
-                                    </h2>
-                                    <p style={{
-                                                    fontSize: "10px",
-                                                    color: "GrayText",
-                                                   }}>
-                                        ~ ${SUSDBalanceInUSD}
-                                     </p>
-                                     
-                                     
-                                     <p style={{
-                                    marginTop: "20px",
-                                    fontSize: "10px"
-                                }}>
-                                    Deposited Balance:
-                                </p>
-                                <h2>
-                                        {collateralBalance ? 
-                                            truncate(toEther(collateralBalance[0] * BigInt(1)).toString(), 4).toLocaleString() 
-                                            : 
-                                            '...'
-                                        }<span style={{fontSize: "10px"}}> sUSD</span>
-                                                   </h2>
-                                                   <p style={{
-                                                    fontSize: "10px",
-                                                    color: "GrayText",
-                                                   }}>
-                                        ~ ${depositedBalanceInUSD}
-                                     </p>
-                                                   
-                            </div>
-                            
-                            <div style={{
-                                display: "flex",
-                                flexDirection: "column",
-                                justifyContent: "end",
-                                alignItems: "end"
-                            }}>
-                                <p style={{fontSize: "10px"}}>
-                                    Collateral Balance:
-                            </p>
-                            
-                            
-                                      
-                            <h2>
-                                        {collateralBalance ? 
-                                            truncate(toEther(collateralBalance[2] * BigInt(1)).toString(), 4).toLocaleString() 
-                                            : 
-                                            '...'
-                                        }<span style={{fontSize: "10px"}}> sUSD</span>
-                                                   </h2>
-                                                   <p style={{
-                                                    fontSize: "10px",
-                                                    color: "GrayText",
-                                                   }}>
-                                        ~ ${(formattedCollateralDollarValue)}
-                                     </p>
-                                   
-                                     <p style={{
-                                    marginTop: "20px",
-                                    fontSize: "10px"
-                                }}>
-                                    Borrowed Balance:
-                                </p>
-                                <h2>
-                                        {collateralBalance ? 
-                                            truncate(toEther(collateralBalance[1] * BigInt(1)).toString(), 2).toLocaleString() 
-                                            : 
-                                            '...'
-                                        }<span style={{fontSize: "10px"}}> sUSD</span>
-                                                   </h2>
-                                                   <p style={{
-                                                    fontSize: "10px",
-                                                    color: "GrayText",
-                                                   }}>
-                                        ~ ${borrowedBalanceInUSD}
-                                     </p>
-                            </div>
-                        </div>
+                        <SusdLendCard />
+                         
                         <div style={{
                             display: "flex",
                             flexDirection: "column",
@@ -873,6 +781,26 @@ function calculateBorrowLimitInAsset(
                                     marginTop: "10px",
                                 }}
                                 >Set Approval</TransactionButton>
+
+                                <TransactionButton style={{width:"100%", marginTop:"10px",}}
+                                 transaction={() => (
+                                    prepareContractCall({
+                                        contract: LENDING_POOL_CONTRACT,
+                                        method: "withdrawCollateral",
+                                        params: [SUSD_CONTRACT.address, (toWei(depositAmount.toString()))],
+                                    })
+                                 )}
+                                 onTransactionConfirmed={() => {
+                                    setDepositAmount(100);
+                                    setDepositingState("init");
+                                    refetchSUSDBalance;
+                                    refetchcollateralBalance;
+                                    setIsDepositing(false);
+                                 }}
+                                 
+                                >
+                                    Withdraw Collateral
+                                </TransactionButton>
                                 
                                 </>
 
@@ -1263,6 +1191,25 @@ function calculateBorrowLimitInAsset(
                                     marginTop: "10px",
                                 }}
                                 >Set Approval</TransactionButton>
+                                <TransactionButton style={{width:"100%", marginTop:"10px",}}
+                                 transaction={() => (
+                                    prepareContractCall({
+                                        contract: LENDING_POOL_CONTRACT,
+                                        method: "withdrawCollateral",
+                                        params: [SUSD_CONTRACT.address, (toWei(repayAmount.toString()))],
+                                    })
+                                 )}
+                                 onTransactionConfirmed={() => {
+                                    setDepositAmount(100);
+                                    setDepositingState("init");
+                                    refetchSUSDBalance;
+                                    refetchcollateralBalance;
+                                    setIsDepositing(false);
+                                 }}
+                                 
+                                >
+                                    Withdraw Collateral
+                                </TransactionButton>
                                 
                                 </>
 
@@ -1652,6 +1599,26 @@ padding: "5px"
                     marginTop: "10px",
                 }}
                 >Set Approval</TransactionButton>
+
+                                <TransactionButton style={{width:"100%", marginTop:"10px",}}
+                                 transaction={() => (
+                                    prepareContractCall({
+                                        contract: LENDING_POOL_CONTRACT,
+                                        method: "withdraw",
+                                        params: [SUSD_CONTRACT.address, (toWei(lendAmount.toString()))],
+                                    })
+                                 )}
+                                 onTransactionConfirmed={() => {
+                                    setLendAmount(100);
+                                    setLendingState("init");
+                                    refetchSUSDBalance;
+                                    refetchcollateralBalance;
+                                    setIsLending(false);
+                                 }}
+                                 
+                                >
+                                    Withdraw
+                                </TransactionButton>
                 
                 </>
 

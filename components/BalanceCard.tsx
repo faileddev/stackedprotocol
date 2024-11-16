@@ -19,21 +19,7 @@ import { Contract, ethers, formatUnits, JsonRpcProvider, parseUnits } from "ethe
 
 
 
-const ORACLE_CONTRACT_ADDRESS = "0xaCc98Eeaa31fF2bEE5D670Cd874E5e44Fa707eE4";
-const ORACLE_CONTRACT_ABI = [
-  {
-    "inputs": [
-      { "internalType": "address", "name": "_pair", "type": "address" },
-      { "internalType": "address", "name": "_ethUsdPriceFeed", "type": "address" },
-      { "internalType": "address", "name": "_token", "type": "address" },
-      { "internalType": "address", "name": "_weth", "type": "address" },
-      { "internalType": "uint8", "name": "_tokenDecimals", "type": "uint8" }
-    ],
-    "stateMutability": "nonpayable",
-    "type": "constructor"
-  },
-  { "inputs": [], "name": "getTokenUsdPrice", "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }], "stateMutability": "view", "type": "function" },
-];
+
 
 
 
@@ -44,21 +30,6 @@ const balanceCard: React.FC = () => {
     const account = useActiveAccount();
     
 
-    const [sosDepositAmount, setSosDepositAmount] = useState(100000);
-    const [sosReceiveAmount, setSosReceiveAmount] = useState(0);
-
-    const [usdcDepositAmount, setUsdcDepositAmount] = useState(100);
-    const [daiDepositAmount, setDaiDepositAmount] = useState(100);
-    const [redeemAmount, setRedeemAmount] = useState(0);
-    const [sosDepositState, setSosDepositState] = useState<"init" | "approved">("init");
-    const [usdcDepositState, setUsdcDepositState] = useState<"init" | "approved">("init");
-    const [daiDepositState, setDaiDepositState] = useState<"init" | "approved">("init");
-    const [isDepositingSos, setIsDepositingSos] = useState(false);
-    const [isDepositingUsdc, setIsDepositingUsdc] = useState(false);
-    const [isDepositingDai, setIsDepositingDai] = useState(false);
-    const [isRedeeming, setIsRedeeming] = useState(false);
-    const [tokenPrice, setTokenPrice] = useState<number | null>(null); // Renamed from `price` to `tokenPrice`
-    const [receiveAmount, setReceiveAmount] = useState<string>("Loading...");
     
 
     
@@ -157,21 +128,7 @@ const balanceCard: React.FC = () => {
     
     
 
-    // Calculate receiveAmount in USD
-    useEffect(() => {
-        if (tokenPrice !== null) {
-            const calculatedAmount = (sosDepositAmount * tokenPrice).toFixed(2);
-            setReceiveAmount(calculatedAmount);
-        } else {
-            setReceiveAmount("Loading...");
-        }
-    }, [tokenPrice, sosDepositAmount]);
-
-    useEffect(() => {
-        if (tokenPrice !== null) {
-            setSosReceiveAmount(sosDepositAmount * tokenPrice);
-        }
-    }, [sosDepositAmount, tokenPrice]);
+   
 
   
     
@@ -226,15 +183,13 @@ const balanceCard: React.FC = () => {
                                      )}
                         </div>
                         {loadingNetworth ? (
-                                      <p style={{
-                                        fontSize: "8px",
-
-                                      }}>...</p>
+                                      <p>...</p>
                                      ) : (
-                                      <p style={{
-                                        fontSize: "8px",
-
-                                      }}>~ ${truncate(toEther(Networth!),2).toLocaleString()}</p>
+                                      <p 
+                                      style={{
+                                        fontSize: "10px",
+                                        color: "GrayText",
+                                      }}>~ {truncate(toEther(Networth!),2).toLocaleString()} USD</p>
                                      )}
                         </div>
                         

@@ -19,6 +19,7 @@ import DaiVault from "../../../components/Dai";
 import EthereumLend from "../../../components/EthereumLend";
 import DaiLend from "../../../components/DaiLend";
 import SusdLend from "../../../components/SusdLend";
+import SosLend from "../../../components/SosLend";
 
 const lendPage = () => {
   const account = useActiveAccount();
@@ -87,8 +88,7 @@ const lendPage = () => {
         }}>
             {account ? (
                 <div style={{ textAlign: "left"}}>
-                <BalanceCard />
-
+                  <BalanceCard />
                 <h1 style={{marginTop: "40px",}}>
             Lend 
           </h1>
@@ -98,6 +98,8 @@ const lendPage = () => {
                 <DaiLend />
 
                 <SusdLend />
+
+                <SosLend />
 
                 
 
