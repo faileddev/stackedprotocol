@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import { approve, balanceOf } from "thirdweb/extensions/erc20";
 import { TransactionButton, useActiveAccount, useReadContract } from "thirdweb/react";
-import { DAI_CONTRACT, SUSD_CONTRACT, TOKEN_CONTRACT, USDC_CONTRACT } from "../utils/constants";
+import { DAI_CONTRACT, LENDING_POOL_CONTRACT, SUSD_CONTRACT, TOKEN_CONTRACT, USDC_CONTRACT } from "../utils/constants";
 import { prepareContractCall, toEther, toWei } from "thirdweb";
 import { Box, Tab, Tabs, Typography } from "@mui/material";
 import sUSD from "../public/susdcoin.svg"
@@ -29,6 +29,8 @@ const Mint: React.FC = () => {
 
     const account = useActiveAccount();
     
+    const SOSContract = "0xf63Fca327C555408819e26eDAc30F83E55a119f4";
+
 
     const [sosDepositAmount, setSosDepositAmount] = useState(100000);
     const [sosReceiveAmount, setSosReceiveAmount] = useState(0);
@@ -43,7 +45,6 @@ const Mint: React.FC = () => {
     const [isDepositingUsdc, setIsDepositingUsdc] = useState(false);
     const [isDepositingDai, setIsDepositingDai] = useState(false);
     const [isRedeeming, setIsRedeeming] = useState(false);
-    const [tokenPrice, setTokenPrice] = useState<number | null>(null); // Renamed from `price` to `tokenPrice`
     const [receiveAmount, setReceiveAmount] = useState<string>("Loading...");
     
 
@@ -98,6 +99,22 @@ const Mint: React.FC = () => {
        
     });
 
+    const { 
+        data: rawAssetPrice, 
+        isLoading: loadingAssetPrice,
+        refetch: refetchAssetPrice,
+    } = useReadContract (
+        
+        {
+            contract: LENDING_POOL_CONTRACT,
+            method: "getPrice",
+            params: [SOSContract],
+            queryOptions: {
+                enabled: !!account
+            }
+       
+    });
+
 
     
 
@@ -115,6 +132,10 @@ const Mint: React.FC = () => {
             }
        
     });
+
+    const assetPrice = rawAssetPrice ? Number(rawAssetPrice) / 1e8 : null;    const localizedAssetPrice = assetPrice 
+    ? Number(assetPrice).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) 
+    : null;
 
     
     function toUSDC(amount: string) {
@@ -138,25 +159,22 @@ const Mint: React.FC = () => {
         return Math.trunc(numericValue*factor) / factor
     }
 
-    const [price, setPrice] = useState<string | null>(null);
     
     
 
     // Calculate receiveAmount in USD
     useEffect(() => {
-        if (tokenPrice !== null) {
-            const calculatedAmount = (sosDepositAmount * tokenPrice).toFixed(2);
+        if (assetPrice) {
+            const calculatedAmount = (sosDepositAmount * assetPrice).toFixed(2); // String for display
             setReceiveAmount(calculatedAmount);
+    
+            const receiveAmountNumber = sosDepositAmount * assetPrice; // Number for calculations
+            setSosReceiveAmount(receiveAmountNumber);
         } else {
             setReceiveAmount("Loading...");
         }
-    }, [tokenPrice, sosDepositAmount]);
-
-    useEffect(() => {
-        if (tokenPrice !== null) {
-            setSosReceiveAmount(sosDepositAmount * tokenPrice);
-        }
-    }, [sosDepositAmount, tokenPrice]);
+    }, [assetPrice, sosDepositAmount]);
+    
 
   
     
@@ -415,7 +433,7 @@ const Mint: React.FC = () => {
                                 <p style={{ fontSize: "10px",
                                     marginTop: "5px"
                                 }}>
-                            {tokenPrice ? (
+                            {assetPrice ? (
                                 <>
                                    ~ ${Number(receiveAmount).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} 
                                 </>
@@ -469,7 +487,7 @@ const Mint: React.FC = () => {
 <p style={{ fontSize: "10px",
                                     marginTop: "5px"
                                 }}>
-                            {tokenPrice ? (
+                            {assetPrice ? (
                                 <>
                                    ~ ${Number(receiveAmount).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} 
                                 </>
@@ -538,7 +556,7 @@ const Mint: React.FC = () => {
                             
                         </div>
                         <p>
-                            {tokenPrice ? (
+                            {assetPrice ? (
                                 <>
                                    {Number(receiveAmount).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                                     <span style={{ fontSize: "12px" }}> sUSD</span>
@@ -736,7 +754,7 @@ const Mint: React.FC = () => {
                                 <p style={{ fontSize: "10px",
                                     marginTop: "5px"
                                 }}>
-                            {tokenPrice ? (
+                            {assetPrice ? (
                                 <>
                                    ~ ${Number(usdcDepositAmount).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} 
                                 </>
@@ -790,7 +808,7 @@ const Mint: React.FC = () => {
 <p style={{ fontSize: "10px",
                                     marginTop: "5px"
                                 }}>
-                            {tokenPrice ? (
+                            {assetPrice ? (
                                 <>
                                    ~ ${Number(usdcDepositAmount).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} 
                                 </>
@@ -859,7 +877,7 @@ const Mint: React.FC = () => {
                             
                         </div>
                         <p>
-                            {tokenPrice ? (
+                            {assetPrice ? (
                                 <>
                                     {Number(usdcDepositAmount).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} <span style={{ fontSize: "12px" }}>sUSD</span>
                                 </>
@@ -1057,7 +1075,7 @@ const Mint: React.FC = () => {
                                 <p style={{ fontSize: "10px",
                                     marginTop: "5px"
                                 }}>
-                            {tokenPrice ? (
+                            {assetPrice ? (
                                 <>
                                    ~ ${Number(daiDepositAmount).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} 
                                 </>
@@ -1111,7 +1129,7 @@ const Mint: React.FC = () => {
 <p style={{ fontSize: "10px",
                                     marginTop: "5px"
                                 }}>
-                            {tokenPrice ? (
+                            {assetPrice ? (
                                 <>
                                    ~ ${Number(daiDepositAmount).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} 
                                 </>
@@ -1180,7 +1198,7 @@ const Mint: React.FC = () => {
                             
                         </div>
                         <p>
-                            {tokenPrice ? (
+                            {assetPrice ? (
                                 <>
                                     {Number(daiDepositAmount).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} <span style={{ fontSize: "12px" }}>sUSD</span>
                                 </>
