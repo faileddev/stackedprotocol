@@ -26,13 +26,11 @@
 }
 
 @media (max-width: 768px) {
-    .container {
-        flex-direction: column;
-    }
+    
 
     .container > .box {
         margin-right: 0; /* Remove horizontal margin in column layout */
-        margin-bottom: 10px; /* Optional spacing between columns */
+         /* Optional spacing between columns */
         
     }
 }
