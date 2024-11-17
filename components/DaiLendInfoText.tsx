@@ -2,26 +2,25 @@
 
 import Image from "next/image";
 import { useEffect, useState } from "react";
-import SOS from "../public/SOS.svg"
+import DAI from "../public/DAI.svg"
 
-import sUSD from "../public/sUSD.svg"
 import ETH from "../public/ethereum-eth-logo.svg"
 
 
 import { approve, balanceOf } from "thirdweb/extensions/erc20";
 import { TransactionButton, useActiveAccount, useReadContract, useWalletBalance } from "thirdweb/react";
-import { STAKE_CONTRACT, TOKEN_CONTRACT, LENDING_POOL_CONTRACT, client, chain } from "../utils/constants";
+import { STAKE_CONTRACT, DAI_CONTRACT, LENDING_POOL_CONTRACT, client, chain } from "../utils/constants";
 import { prepareContractCall, readContract, toEther, toWei } from "thirdweb";
 import { addEvent } from "thirdweb/extensions/farcaster/keyRegistry";
 import Link from "next/link";
 import { getEthBalance } from "thirdweb/extensions/multicall3";
 
 
-const SOSLendInfo: React.FC = () => {
+const DaiLendInfoText: React.FC = () => {
 
     const account = useActiveAccount();
 
-    const SOSContract = "0xf63Fca327C555408819e26eDAc30F83E55a119f4";
+    const DAIContract = "0x50c5725949A6F0c72E6C4a641F24049A917DB0Cb";
     const [userCollateralBalance, setUserCollateralBalance] = useState<number | null>(null); // Collateral balance in the asset
 
     const [borrowableAmount, setBorrowableAmount] = useState<number | null>(null);
@@ -54,7 +53,7 @@ const SOSLendInfo: React.FC = () => {
         {
             contract: LENDING_POOL_CONTRACT,
             method: "getAccountBalances",
-            params: [ account?.address || "" , SOSContract],
+            params: [ account?.address || "" , DAIContract],
             queryOptions: {
                 enabled: !!account
             }
@@ -105,7 +104,7 @@ const SOSLendInfo: React.FC = () => {
         {
             contract: LENDING_POOL_CONTRACT,
             method: "getCollateralValueInUSD",
-            params: [ account?.address || "" , SOSContract],
+            params: [ account?.address || "" , DAIContract],
             queryOptions: {
                 enabled: !!account
             }
@@ -121,7 +120,7 @@ const SOSLendInfo: React.FC = () => {
         {
             contract: LENDING_POOL_CONTRACT,
             method: "getPrice",
-            params: [SOSContract],
+            params: [DAIContract],
             queryOptions: {
                 enabled: !!account
             }
@@ -137,7 +136,7 @@ const SOSLendInfo: React.FC = () => {
         {
             contract: LENDING_POOL_CONTRACT,
             method: "totalDeposits",
-            params: [SOSContract],
+            params: [DAIContract],
             queryOptions: {
                 enabled: !!account
             }
@@ -153,7 +152,7 @@ const SOSLendInfo: React.FC = () => {
         {
             contract: LENDING_POOL_CONTRACT,
             method: "totalBorrows",
-            params: [SOSContract],
+            params: [DAIContract],
             queryOptions: {
                 enabled: !!account
             }
@@ -169,7 +168,7 @@ const SOSLendInfo: React.FC = () => {
         {
             contract: LENDING_POOL_CONTRACT,
             method: "calculateInterestRate",
-            params: [SOSContract],
+            params: [DAIContract],
             queryOptions: {
                 enabled: !!account
             }
@@ -194,13 +193,13 @@ const SOSLendInfo: React.FC = () => {
 
 
     const { 
-        data: SOSBalance, 
-        isLoading: loadingSOSBalance,
-        refetch: refetchSOSBalance
+        data: DAIBalance, 
+        isLoading: loadingDAIBalance,
+        refetch: refetchDAIBalance
     } = useReadContract (
         balanceOf,
         {
-            contract: TOKEN_CONTRACT,
+            contract: DAI_CONTRACT,
             address: account?.address || "",
             queryOptions: {
                 enabled: !!account
@@ -217,7 +216,7 @@ const SOSLendInfo: React.FC = () => {
         {
             contract: LENDING_POOL_CONTRACT,
             method: "depositFeePercent",
-            params: [SOSContract],
+            params: [DAIContract],
             queryOptions: {
                 enabled: !!account
             }
@@ -233,7 +232,7 @@ const SOSLendInfo: React.FC = () => {
         {
             contract: LENDING_POOL_CONTRACT,
             method: "withdrawFeePercent",
-            params: [SOSContract],
+            params: [DAIContract],
             queryOptions: {
                 enabled: !!account
             }
@@ -257,8 +256,8 @@ const SOSLendInfo: React.FC = () => {
     : null;
     
 
-    const SOSBalanceInUSD = SOSBalance && assetPrice 
-    ? (truncate(toEther(SOSBalance), 4) * Number(assetPrice)).toFixed(2) 
+    const DAIBalanceInUSD = DAIBalance && assetPrice 
+    ? (truncate(toEther(DAIBalance), 4) * Number(assetPrice)).toFixed(2) 
     : "0.00";
 
     const totalDepositsInUSD = totalDeposits && assetPrice 
@@ -407,7 +406,7 @@ useEffect(() => {
                     }}>
                                 {totalDeposits 
     ? `${formatNumber(truncate(toEther(totalDeposits), 2))}`
-    : "0.0"} SOS
+    : "0.0"} DAI
                     <span style={{
                     fontSize: "10px",
                     color: "GrayText",
@@ -455,7 +454,7 @@ useEffect(() => {
                     }}>
                                 {totalBorrows 
     ? `${formatNumber(truncate(toEther(totalBorrows), 2))}`
-    : "0.0"} SOS
+    : "0.0"} DAI
                     <span style={{
                     fontSize: "10px",
                     color: "GrayText",
@@ -549,7 +548,7 @@ useEffect(() => {
                                     color: "GrayText",
                                     marginLeft: "5px"}}
                                     >
-                                        {borrowLimitAsset ? `${borrowLimitAsset} SOS` : "Calculating..."}
+                                        {borrowLimitAsset ? `${borrowLimitAsset} DAI` : "Calculating..."}
                                 </span>
                              </p>
                             
@@ -610,4 +609,4 @@ useEffect(() => {
         
 )
 };
-export default SOSLendInfo;
+export default DaiLendInfoText;

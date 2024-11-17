@@ -20,6 +20,7 @@ import DaiUserBorrowInfo from "./DaiUserBorrowInfo";
 import DaiRepayCard from "./DaiRepayCard";
 import DaiLendInfo from "./DaiLendInfo";
 import DaiColCard from "./DaiColCard";
+import DaiLendInfoText from "./DaiLendInfoText";
 
 
 const DaiLend: React.FC = () => {
@@ -1384,7 +1385,7 @@ padding: "5px"
                 <div style={{
                     width: "100%"
                 }}>
-               <DaiLendInfo />
+               <DaiLendInfoText />
                </div>
 
         

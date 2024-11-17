@@ -18,6 +18,7 @@ import { getEthBalance } from "thirdweb/extensions/multicall3";
 import WethLendCard from "./WethLendCard";
 import WethColCard from "./WethColCard";
 import WethRepayCard from "./WethRepayCard";
+import WethLendInfo from "./WethLendInfo";
 
 
 const EthereumLend: React.FC = () => {
@@ -1330,185 +1331,11 @@ padding: "5px"
             {lendingState === "init" ? (
                 <>
                 
-
-<div style={{
-            display: "flex",
-            flexDirection: "row",
-            width: "100%",
-            marginTop: "10px",
-            justifyContent: "space-between",
-        }}>
-
-            
-        
-        <div style={{
-            display: "flex",
-            flexDirection: "column",
-            textAlign: "left"
-            
-        }} >
-            <p style={{marginTop: "10px"}}>Wallet Balance:</p>
-            
-        </div>
-        <div style={{
-            display: "flex",
-            flexDirection: "column",
-            textAlign: "right"
-            
-        }} >
-            <p style={{
-                        marginTop: "10px"
-                    }}>
-                        {truncate(toEther(wethBalance!),4).toLocaleString() } WETH
-                    
-                        <span style={{
-                    fontSize: "10px",
-                    color: "GrayText",
-                    marginLeft: "5px"}}
-                    >
-                        ~ ${wethBalanceInUSD}
-                        </span>
-                    
-                    </p>
-            
-        </div>
-        
-        </div>
-
-        <div style={{
-            display: "flex",
-            flexDirection: "row",
-            width: "100%",
-            justifyContent: "space-between",
-        }}>
-
-            
-        
-        <div style={{
-            display: "flex",
-            flexDirection: "column",
-            textAlign: "left"
-            
-        }} >
-            <p style={{marginTop: "10px"}}>Deposited Balance:</p>
-            
-        </div>
-        <div style={{
-            display: "flex",
-            flexDirection: "column",
-            textAlign: "right"
-            
-        }} >
-            <p style={{
-                        marginTop: "10px"
-                    }}>
-                                {collateralBalance ?
-                                    truncate(toEther(collateralBalance[0] * BigInt(1)).toString(), 4).toLocaleString()
-                                    :
-                                    '0.00'
-                                } WETH
-                        <span style={{
-                    fontSize: "10px",
-                    color: "GrayText",
-                    marginLeft: "5px"}}
-                    >
-                        ~ ${depositedBalanceInUSD}
-                        </span>
-                            </p>
-            
-        </div>
-
-        
-        
-        
-        
-        </div>
-
-
-            
-            <div style={{
-            display: "flex",
-            flexDirection: "row",
-            width: "100%",
-            justifyContent: "space-between",
-        }}>
-
-            
-        
-        <div style={{
-            display: "flex",
-            flexDirection: "column",
-            textAlign: "left"
-            
-        }} >
-            <p style={{marginTop: "10px"}}>Pool Balance:</p>
-            
-        </div>
-        <div style={{
-            display: "flex",
-            flexDirection: "column",
-            textAlign: "right"
-            
-        }} >
-            <p style={{
-                        marginTop: "10px"
-                    }}>
-                                { 
-                                    truncate(toEther(totalDeposits! * BigInt(1)).toString(), 4).toLocaleString()
-                                    
-                                } WETH
-                    <span style={{
-                    fontSize: "10px",
-                    color: "GrayText",
-                    marginLeft: "5px"}}
-                    >
-
-                       ~ ${totalDepositsInUSD}
-                    </span>
-                            </p>
-            
-        </div>
-
-        
-        
-        
-        </div>
-        <div style={{
-            display: "flex",
-            flexDirection: "row",
-            width: "100%",
-            justifyContent: "space-between",
-        }}>
-
-            
-        
-        <div style={{
-            display: "flex",
-            flexDirection: "column",
-            textAlign: "left"
-            
-        }} >
-            <p style={{marginTop: "10px"}}>Lending APR:</p>
-            
-        </div>
-        <div style={{
-            display: "flex",
-            flexDirection: "column",
-            textAlign: "right"
-            
-        }} >
-            <p style={{
-                        marginTop: "10px"
-                    }}>
-                                {depositAPR}%
-                            </p>
-            
-        </div>
-
-        
-        
-        
-        </div>
+                <div style={{
+                    width: "100%"
+                }}>  
+<WethLendInfo />
+</div>
 
 
         <div 

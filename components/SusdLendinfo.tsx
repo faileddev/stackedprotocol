@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { useEffect, useState } from "react";
-import SOS from "../public/SOS.svg"
+import Susd from "../public/Susd.svg"
 
 import sUSD from "../public/sUSD.svg"
 import ETH from "../public/ethereum-eth-logo.svg"
@@ -10,18 +10,18 @@ import ETH from "../public/ethereum-eth-logo.svg"
 
 import { approve, balanceOf } from "thirdweb/extensions/erc20";
 import { TransactionButton, useActiveAccount, useReadContract, useWalletBalance } from "thirdweb/react";
-import { STAKE_CONTRACT, TOKEN_CONTRACT, LENDING_POOL_CONTRACT, client, chain } from "../utils/constants";
+import { STAKE_CONTRACT, SUSD_CONTRACT, LENDING_POOL_CONTRACT, client, chain } from "../utils/constants";
 import { prepareContractCall, readContract, toEther, toWei } from "thirdweb";
 import { addEvent } from "thirdweb/extensions/farcaster/keyRegistry";
 import Link from "next/link";
 import { getEthBalance } from "thirdweb/extensions/multicall3";
 
 
-const SOSLendInfo: React.FC = () => {
+const SusdLendInfo: React.FC = () => {
 
     const account = useActiveAccount();
 
-    const SOSContract = "0xf63Fca327C555408819e26eDAc30F83E55a119f4";
+    const SusdContract = "0x65F74FD58284dAEaFaC89d122Fb0566E0629C2a0";
     const [userCollateralBalance, setUserCollateralBalance] = useState<number | null>(null); // Collateral balance in the asset
 
     const [borrowableAmount, setBorrowableAmount] = useState<number | null>(null);
@@ -54,7 +54,7 @@ const SOSLendInfo: React.FC = () => {
         {
             contract: LENDING_POOL_CONTRACT,
             method: "getAccountBalances",
-            params: [ account?.address || "" , SOSContract],
+            params: [ account?.address || "" , SusdContract],
             queryOptions: {
                 enabled: !!account
             }
@@ -105,7 +105,7 @@ const SOSLendInfo: React.FC = () => {
         {
             contract: LENDING_POOL_CONTRACT,
             method: "getCollateralValueInUSD",
-            params: [ account?.address || "" , SOSContract],
+            params: [ account?.address || "" , SusdContract],
             queryOptions: {
                 enabled: !!account
             }
@@ -121,7 +121,7 @@ const SOSLendInfo: React.FC = () => {
         {
             contract: LENDING_POOL_CONTRACT,
             method: "getPrice",
-            params: [SOSContract],
+            params: [SusdContract],
             queryOptions: {
                 enabled: !!account
             }
@@ -137,7 +137,7 @@ const SOSLendInfo: React.FC = () => {
         {
             contract: LENDING_POOL_CONTRACT,
             method: "totalDeposits",
-            params: [SOSContract],
+            params: [SusdContract],
             queryOptions: {
                 enabled: !!account
             }
@@ -153,7 +153,7 @@ const SOSLendInfo: React.FC = () => {
         {
             contract: LENDING_POOL_CONTRACT,
             method: "totalBorrows",
-            params: [SOSContract],
+            params: [SusdContract],
             queryOptions: {
                 enabled: !!account
             }
@@ -169,7 +169,7 @@ const SOSLendInfo: React.FC = () => {
         {
             contract: LENDING_POOL_CONTRACT,
             method: "calculateInterestRate",
-            params: [SOSContract],
+            params: [SusdContract],
             queryOptions: {
                 enabled: !!account
             }
@@ -194,13 +194,13 @@ const SOSLendInfo: React.FC = () => {
 
 
     const { 
-        data: SOSBalance, 
-        isLoading: loadingSOSBalance,
-        refetch: refetchSOSBalance
+        data: SusdBalance, 
+        isLoading: loadingSusdBalance,
+        refetch: refetchSusdBalance
     } = useReadContract (
         balanceOf,
         {
-            contract: TOKEN_CONTRACT,
+            contract: SUSD_CONTRACT,
             address: account?.address || "",
             queryOptions: {
                 enabled: !!account
@@ -217,7 +217,7 @@ const SOSLendInfo: React.FC = () => {
         {
             contract: LENDING_POOL_CONTRACT,
             method: "depositFeePercent",
-            params: [SOSContract],
+            params: [SusdContract],
             queryOptions: {
                 enabled: !!account
             }
@@ -233,7 +233,7 @@ const SOSLendInfo: React.FC = () => {
         {
             contract: LENDING_POOL_CONTRACT,
             method: "withdrawFeePercent",
-            params: [SOSContract],
+            params: [SusdContract],
             queryOptions: {
                 enabled: !!account
             }
@@ -257,8 +257,8 @@ const SOSLendInfo: React.FC = () => {
     : null;
     
 
-    const SOSBalanceInUSD = SOSBalance && assetPrice 
-    ? (truncate(toEther(SOSBalance), 4) * Number(assetPrice)).toFixed(2) 
+    const SusdBalanceInUSD = SusdBalance && assetPrice 
+    ? (truncate(toEther(SusdBalance), 4) * Number(assetPrice)).toFixed(2) 
     : "0.00";
 
     const totalDepositsInUSD = totalDeposits && assetPrice 
@@ -407,7 +407,7 @@ useEffect(() => {
                     }}>
                                 {totalDeposits 
     ? `${formatNumber(truncate(toEther(totalDeposits), 2))}`
-    : "0.0"} SOS
+    : "0.0"} Susd
                     <span style={{
                     fontSize: "10px",
                     color: "GrayText",
@@ -455,7 +455,7 @@ useEffect(() => {
                     }}>
                                 {totalBorrows 
     ? `${formatNumber(truncate(toEther(totalBorrows), 2))}`
-    : "0.0"} SOS
+    : "0.0"} Susd
                     <span style={{
                     fontSize: "10px",
                     color: "GrayText",
@@ -549,7 +549,7 @@ useEffect(() => {
                                     color: "GrayText",
                                     marginLeft: "5px"}}
                                     >
-                                        {borrowLimitAsset ? `${borrowLimitAsset} SOS` : "Calculating..."}
+                                        {borrowLimitAsset ? `${borrowLimitAsset} Susd` : "Calculating..."}
                                 </span>
                              </p>
                             
@@ -610,4 +610,4 @@ useEffect(() => {
         
 )
 };
-export default SOSLendInfo;
+export default SusdLendInfo;

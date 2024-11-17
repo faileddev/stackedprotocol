@@ -357,7 +357,7 @@ function calculateBorrowLimitInAsset(
                                                    
                             
                                      <div style={{
-                                    marginTop: "10px",
+                                    marginTop: "4px",
                                     border: "solid",
                                     borderColor: "grey",
                                     padding: "10px",
@@ -390,7 +390,7 @@ function calculateBorrowLimitInAsset(
                                    
                                 
                                      <div style={{
-                                    marginTop: "10px",
+                                    marginTop: "4px",
                                     border: "solid",
                                     borderColor: "grey",
                                     padding: "10px",

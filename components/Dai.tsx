@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { useEffect, useState } from "react";
-import WETH from "../public/multi-collateral-dai-dai-logo.svg"
+import DAI from "../public/multi-collateral-dai-dai-logo.svg"
 
 import sUSD from "../public/sUSD.svg"
 import ETH from "../public/ethereum-eth-logo.svg"
@@ -148,8 +148,8 @@ const DaiVault: React.FC = () => {
 
     const { 
         data: daiBalance, 
-        isLoading: loadingdaiBalance,
-        refetch: refetchdaiBalance
+        isLoading: loadingDaiBalance,
+        refetch: refetchDaiBalance
     } = useReadContract (
         balanceOf,
         {
@@ -305,7 +305,7 @@ function calculateBorrowLimitInAsset(
                         >
                             
                             <Image style={{height: "36px", width: "36px", marginLeft: "5px"}}
-                    src={WETH}
+                    src={DAI}
                     alt='logo'
                     />      
                         <div style={{ marginLeft: "5px"}}>
@@ -500,7 +500,7 @@ function calculateBorrowLimitInAsset(
 
 
                             <Image
-        src={WETH} // Logo source
+        src={DAI} // Logo source
         alt="logo"
         style={{ height: "24px", width: "24px", marginRight: "8px" }}
     />
@@ -743,7 +743,7 @@ function calculateBorrowLimitInAsset(
                                  onTransactionConfirmed={() => {
                                     setSupplyAmount(100);
                                     setDepositingState("init");
-                                    refetchdaiBalance;
+                                    refetchDaiBalance;
                                     refetchcollateralBalance;
                                     setIsDepositing(false);
                                  }}
@@ -774,7 +774,7 @@ function calculateBorrowLimitInAsset(
                                  onTransactionConfirmed={() => {
                                     setSupplyAmount(100);
                                     setDepositingState("init");
-                                    refetchdaiBalance;
+                                    refetchDaiBalance;
                                     refetchcollateralBalance;
                                     setIsDepositing(false);
                                  }}
@@ -819,33 +819,36 @@ function calculateBorrowLimitInAsset(
                     </div>
                 )}
                 {isRepaying && (
-                    <div 
-                    style={{
-                        position: "fixed",
-                        top: 0,
-                        left: 0,
-                        width: "100%",
-                        height: "100%",
-                        
-                        backgroundColor: "rgba(0, 0, 0, 0.5)",
-                        display: "flex",
-                        justifyContent: "center",
-                        alignItems: "center",
-                        margin: "10px"
-                        
-                    }}>
-                        <div style={{
-                            position: "relative",
-                            display: "flex",
-                            flexDirection: "column",
-                            alignItems: "start",
-                            textAlign: "left",
-                            backgroundColor: "#151515",
-                            margin: "20px",
-                            padding: "40px",
-                            borderRadius: "10px",
-                            maxWidth: "500px",
-                        }}>
+                   <div 
+                   style={{
+                       position: "fixed",
+                       top: 0,
+                       left: 0,
+                       width: "100%",
+                       height: "100vh",
+                       
+                       backgroundColor: "rgba(0, 0, 0, 0.5)",
+                       display: "flex",
+                       justifyContent: "center",
+                       alignItems: "center",
+                       
+                       
+                   }}>
+                       <div style={{
+                           position: "relative",
+                           display: "flex",
+                           flexDirection: "column",
+                           alignItems: "start",
+                           textAlign: "left",
+                           backgroundColor: "#151515",
+                           margin: "20px",
+                           padding: "20px",
+                           borderRadius: "10px",
+                           width: "100%",
+                           maxWidth: "500px",
+                           maxHeight: "80vh", // Limits height to 90% of the viewport
+                           overflowY: "auto", // Enables vertical scrolling
+                       }}>
                             
                             <h1>
                                 Repay Loan
@@ -853,7 +856,7 @@ function calculateBorrowLimitInAsset(
                             
                             <div style={{
                                 marginTop: "20px",
-                                width: "380px"
+                                width: "100%"
                             }}>
                             <DaiRepayCard />
                             </div>
@@ -910,7 +913,7 @@ function calculateBorrowLimitInAsset(
 
 
                             <Image
-        src={WETH} // Logo source
+        src={DAI} // Logo source
         alt="logo"
         style={{ height: "24px", width: "24px", marginRight: "8px" }}
     />
@@ -1023,6 +1026,17 @@ function calculateBorrowLimitInAsset(
                         
                         </div>
 
+                        <div 
+                style={{
+                    display: "flex",
+                    flexDirection: "row",
+                    width: "100%",
+                    gap: "6px"
+                }}>
+                    <div style={{
+                        width: "100%"
+                    }}>
+
                                 <TransactionButton
                                 transaction={() => (
                                     approve ({
@@ -1038,7 +1052,36 @@ function calculateBorrowLimitInAsset(
                                     width: "100%",
                                     marginTop: "10px",
                                 }}
-                                >Set Approval</TransactionButton>
+                                >Confirm Repayment</TransactionButton>
+
+                                </div>
+
+                                <div style={{
+                                        width: "100%"
+                                    }}>
+
+                                <TransactionButton style={{width:"100%", marginTop:"10px",}}
+                                 transaction={() => (
+                                    prepareContractCall({
+                                        contract: LENDING_POOL_CONTRACT,
+                                        method: "withdrawCollateral",
+                                        params: [DAI_CONTRACT.address, (toWei(repayAmount.toString()))],
+                                    })
+                                 )}
+                                 onTransactionConfirmed={() => {
+                                    setRepayAmount(100);
+                                    setRepayingState("init");
+                                    refetchDaiBalance;
+                                    refetchcollateralBalance;
+                                    setIsRepaying(false);
+                                 }}
+                                 
+                                >
+                                    Withdraw Collateral
+                                </TransactionButton>
+
+                                </div>
+                                </div>
                                 
                                 </>
 
@@ -1060,9 +1103,9 @@ function calculateBorrowLimitInAsset(
                                     })
                                  )}
                                  onTransactionConfirmed={() => {
-                                    setRepayAmount(0);
-                                    setDepositingState("init");
-                                    refetchdaiBalance;
+                                    setRepayAmount(100);
+                                    setRepayingState("init");
+                                    refetchDaiBalance;
                                     refetchcollateralBalance;
                                     setIsRepaying(false);
                                  }}
@@ -1200,7 +1243,7 @@ function calculateBorrowLimitInAsset(
 
 
                             <Image
-        src={WETH} // Logo source
+        src={DAI} // Logo source
         alt="logo"
         style={{ height: "24px", width: "24px", marginRight: "8px" }}
     />
@@ -1447,7 +1490,7 @@ function calculateBorrowLimitInAsset(
                                             })
                                         )}
                                         onTransactionConfirmed={() => {
-                                            refetchdaiBalance();
+                                            refetchDaiBalance();
                                             refetchcollateralBalance();
                                     
                                         }}
@@ -1465,7 +1508,7 @@ function calculateBorrowLimitInAsset(
                             )}
                             onTransactionConfirmed={() => {
                                 setBorrowAmount(0);
-                                refetchdaiBalance;
+                                refetchDaiBalance;
                                 refetchcollateralBalance;
                                 setisBorrowing(false);
                             }}
