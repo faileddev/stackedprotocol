@@ -274,8 +274,8 @@ function calculateBorrowLimitInAsset(
                                         <p style={{fontSize: "10px"}}>
                                            Wallet Balance:
                                                                     </p>
-                                              <h2>{formatNumber(truncate(toEther(SOSBalance!),4)) }<span style={{fontSize: "10px"}}> SOS</span>
-                                            </h2>
+                                              <h3>{formatNumber(truncate(toEther(SOSBalance!),4)) }<span style={{fontSize: "10px"}}> SOS</span>
+                                            </h3>
                                             <p style={{
                                                             fontSize: "10px",
                                                             color: "GrayText",
@@ -290,13 +290,13 @@ function calculateBorrowLimitInAsset(
                                     }}>
                                         Deposited Balance:
                                     </p>
-                                    <h2>
+                                    <h3>
                                             {collateralBalance ?
                                                 formatNumber(truncate(toEther(collateralBalance[0]), 4))
                                                 :
                                                 '...'
                                             }<span style={{fontSize: "10px"}}> SOS</span>
-                                                       </h2>
+                                                       </h3>
                                                        <p style={{
                                                         fontSize: "10px",
                                                         color: "GrayText",
@@ -307,10 +307,12 @@ function calculateBorrowLimitInAsset(
                                 </div>
 
 
-                                <div className="container">
+                                <div className="container" >
                                                    
                             
-                                     <div className="box">
+                                     <div className="box" 
+                                     
+                                     >
                             
                                 <p style={{fontSize: "10px"}}>
                                     Collateral Balance:
@@ -318,13 +320,13 @@ function calculateBorrowLimitInAsset(
                             
                             
                                       
-                            <h2>
+                            <h3>
                                         {collateralBalance ? 
                                             formatNumber(truncate(toEther(collateralBalance[2]), 4)) 
                                             : 
                                             '...'
                                         }<span style={{fontSize: "10px"}}> SOS</span>
-                                                   </h2>
+                                                   </h3>
                                                    <p style={{
                                                     fontSize: "10px",
                                                     color: "GrayText",
@@ -335,20 +337,20 @@ function calculateBorrowLimitInAsset(
                                      </div>
                                    
                                 
-                                     <div className="box">
+                                     <div className="box" >
 
                                      <p style={{
                                     fontSize: "10px"
                                 }}>
                                     Borrowed Balance:
                                 </p>
-                                <h2>
+                                <h3>
                                         {collateralBalance ? 
                                             formatNumber(truncate(toEther(collateralBalance[1]), 2)) 
                                             : 
                                             '...'
                                         }<span style={{fontSize: "10px"}}> SOS</span>
-                                                   </h2>
+                                                   </h3>
                                                    <p style={{
                                                     fontSize: "10px",
                                                     color: "GrayText",

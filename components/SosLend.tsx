@@ -421,7 +421,7 @@ function calculateBorrowLimitInAsset(
                                                     
                                                     onClick={() => setIsLending(true)}
                                                     >
-                                    Deposit
+                                    Lend
                                 </button>
                                 <button style={{
                                                     marginLeft: "5px",
@@ -477,7 +477,7 @@ function calculateBorrowLimitInAsset(
                         display: "flex",
                         justifyContent: "center",
                         alignItems: "center",
-                        margin: "10px"
+                        
                         
                     }}>
                         <div style={{
@@ -488,20 +488,24 @@ function calculateBorrowLimitInAsset(
                             textAlign: "left",
                             backgroundColor: "#151515",
                             margin: "20px",
-                            padding: "40px",
+                            padding: "20px",
                             borderRadius: "10px",
+                            width: "100%",
                             maxWidth: "500px",
+                            maxHeight: "80vh", // Limits height to 90% of the viewport
+                            overflowY: "auto", // Enables vertical scrolling
                         }}>
                             
                             <h1>
                                 Collaterize SOS
                             </h1>
-                            <p style={{
-                                marginTop: "10px"
-                            }}>
-                            By collateralizing your SOS, you can unlock its full potential on our platform. When you collateralize your SOS, it becomes a secure asset that allows you to borrow other tokens while keeping your funds working for you.
-                            </p>
                             
+                            <div style={{
+                            width: "100%",
+                            marginTop: "20px"
+                            }}>
+                            <SOSColCard />
+                            </div>
                             
 
                             <div style={{
@@ -767,7 +771,16 @@ function calculateBorrowLimitInAsset(
                         
                         
                         </div>
-
+                        <div 
+                style={{
+                    display: "flex",
+                    flexDirection: "row",
+                    width: "100%",
+                    gap: "6px"
+                }}>
+                    <div style={{
+                        width: "100%"
+                    }}>
                                 <TransactionButton
                                 transaction={() => (
                                     approve ({
@@ -784,6 +797,11 @@ function calculateBorrowLimitInAsset(
                                     marginTop: "10px",
                                 }}
                                 >Set Approval</TransactionButton>
+
+                                </div>
+                                <div style={{
+                                        width: "100%"
+                                    }}>
 
                                 <TransactionButton style={{width:"100%", marginTop:"10px",}}
                                  transaction={() => (
@@ -804,6 +822,9 @@ function calculateBorrowLimitInAsset(
                                 >
                                     Withdraw Collateral
                                 </TransactionButton>
+                                </div>
+
+                                </div>
                                 
                                 </>
 
@@ -815,7 +836,7 @@ function calculateBorrowLimitInAsset(
                                     </h1>
                                 
          
-         
+                                
                                 <TransactionButton style={{width:"100%", marginTop:"10px",}}
                                  transaction={() => (
                                     prepareContractCall({
@@ -835,6 +856,7 @@ function calculateBorrowLimitInAsset(
                                 >
                                     Deposit Collateral
                                 </TransactionButton>
+                                
                                 
 
                                 
@@ -1296,7 +1318,7 @@ function calculateBorrowLimitInAsset(
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
-        boxSizing: "border-box"
+        
         
     }}>
         <div style={{
@@ -1307,13 +1329,13 @@ function calculateBorrowLimitInAsset(
             textAlign: "left",
             backgroundColor: "#151515",
             margin: "20px",
-            padding: "40px",
+            padding: "20px",
             borderRadius: "10px",
             width: "100%",
             maxWidth: "500px",
             maxHeight: "80vh", // Limits height to 90% of the viewport
             overflowY: "auto", // Enables vertical scrolling
-            boxSizing: "border-box",
+            
         }}>
             
             <h1>
@@ -1424,42 +1446,56 @@ padding: "5px"
         
         
 
-                <TransactionButton
-                transaction={() => (
-                    approve ({
-                        contract: TOKEN_CONTRACT,
-                        spender: LENDING_POOL_CONTRACT.address,
-                        amount: lendAmount,
-                    })
-                )}
-                onTransactionConfirmed={() => (
-                    setLendingState("approved")
-                )}
+                <div 
                 style={{
+                    display: "flex",
+                    flexDirection: "row",
                     width: "100%",
-                    marginTop: "10px",
-                }}
-                >Set Approval</TransactionButton>
-
-                                <TransactionButton style={{width:"100%", marginTop:"10px",}}
-                                 transaction={() => (
-                                    prepareContractCall({
-                                        contract: LENDING_POOL_CONTRACT,
-                                        method: "withdraw",
-                                        params: [TOKEN_CONTRACT.address, (toWei(lendAmount.toString()))],
-                                    })
-                                 )}
-                                 onTransactionConfirmed={() => {
-                                    setLendAmount(100);
-                                    setLendingState("init");
-                                    refetchSOSBalance;
-                                    refetchcollateralBalance;
-                                    setIsLending(false);
-                                 }}
-                                 
-                                >
-                                    Withdraw
-                                </TransactionButton>
+                    gap: "6px"
+                }}>
+                    <div style={{
+                        width: "100%"
+                    }}>
+                        <TransactionButton
+                        transaction={() => (
+                            approve ({
+                                contract: TOKEN_CONTRACT,
+                                spender: LENDING_POOL_CONTRACT.address,
+                                amount: lendAmount,
+                            })
+                        )}
+                        onTransactionConfirmed={() => (
+                            setLendingState("approved")
+                        )}
+                        style={{
+                            width: "100%",
+                            marginTop: "10px",
+                        }}
+                        >Confrim Deposit</TransactionButton>
+                    </div>
+                                    <div style={{
+                                        width: "100%"
+                                    }}>
+                                        <TransactionButton style={{width:"100%", marginTop:"10px",}}
+                                         transaction={() => (
+                                            prepareContractCall({
+                                                contract: LENDING_POOL_CONTRACT,
+                                                method: "withdraw",
+                                                params: [TOKEN_CONTRACT.address, (toWei(lendAmount.toString()))],
+                                            })
+                                         )}
+                                         onTransactionConfirmed={() => {
+                                            setLendAmount(100);
+                                            setLendingState("init");
+                                            refetchSOSBalance;
+                                            refetchcollateralBalance;
+                                            setIsLending(false);
+                                         }}
+                                        >
+                                            Withdraw
+                                        </TransactionButton>
+                                    </div>
+                </div>
                 
                 </>
 

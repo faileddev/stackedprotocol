@@ -189,6 +189,38 @@ const SOSLendCard: React.FC = () => {
        
     });
 
+    const { 
+        data: depositFee, 
+        isLoading: loadingDepositFee,
+        refetch: refetchDepositFee,
+    } = useReadContract (
+        
+        {
+            contract: LENDING_POOL_CONTRACT,
+            method: "depositFeePercent",
+            params: [SOSContract],
+            queryOptions: {
+                enabled: !!account
+            }
+       
+    });
+
+    const { 
+        data: withdrawFee, 
+        isLoading: loadingWithdrawFee,
+        refetch: refetchWithdrawFee,
+    } = useReadContract (
+        
+        {
+            contract: LENDING_POOL_CONTRACT,
+            method: "withdrawFeePercent",
+            params: [SOSContract],
+            queryOptions: {
+                enabled: !!account
+            }
+       
+    });
+
     
 
     const secondsInYear = 365 * 24 * 60 * 60; // Number of seconds in a year
@@ -290,7 +322,8 @@ function formatNumber(value: number): string {
                 <div style={{
                     border: "solid",
                     borderColor: "grey",
-                    padding: "20px",
+                    borderWidth: "1px",
+                    padding: "10px",
                     borderRadius: "5px",
                     width: "100%",
                     marginRight: "4px"
@@ -298,12 +331,12 @@ function formatNumber(value: number): string {
                     <p style={{fontSize: "10px"}}>
                        Total Deposits:
                                 </p>
-                                <h2>
+                                <h3>
   {totalDeposits 
     ? `${formatNumber(truncate(toEther(totalDeposits), 2))}`
     : "0.0"} 
   <span style={{fontSize: "10px"}}> SOS</span>
-</h2>
+</h3>
                         <p style={{
                                         fontSize: "10px",
                                         color: "GrayText",
@@ -315,7 +348,8 @@ function formatNumber(value: number): string {
                 <div style={{
                     border: "solid",
                     borderColor: "grey",
-                    padding: "20px",
+                    borderWidth: "1px",
+                    padding: "10px",
                     borderRadius: "5px",
                     width: "100%",
                     marginLeft: "4px"
@@ -328,12 +362,12 @@ function formatNumber(value: number): string {
             
             
                       
-            <h2>
+            <h3>
   {totalBorrows 
     ? `${formatNumber(truncate(toEther(totalBorrows), 4))}`
     : "0.0"} 
   <span style={{fontSize: "10px"}}> SOS</span>
-</h2>
+</h3>
                                    
                                    <p style={{
                                     fontSize: "10px",
@@ -356,7 +390,8 @@ function formatNumber(value: number): string {
                 <div style={{
                         border: "solid",
                         borderColor: "grey",
-                        padding: "20px",
+                        borderWidth: "1px",
+                        padding: "10px",
                         borderRadius: "5px",
                         width: "100%",
                         marginRight: "4px"
@@ -367,17 +402,18 @@ function formatNumber(value: number): string {
                     }}>
                         Lending APR:
                     </p>
-                    <h2>
+                    <h3>
                             {
                                 depositAPR
                             }%
-                                       </h2>
+                                       </h3>
                     </div>
                 
                     <div style={{
                         border: "solid",
                         borderColor: "grey",
-                        padding: "20px",
+                        borderWidth: "1px",
+                        padding: "10px",
                         borderRadius: "5px",
                         width: "100%",
                         marginLeft: "4px",
@@ -391,14 +427,15 @@ function formatNumber(value: number): string {
                     }}>
                         Borrow APR:
                     </p>
-                    <h2>
+                    <h3>
                     {apr}%
-                                       </h2>
+                                       </h3>
                                        </div>
                                        <div style={{
                         border: "solid",
                         borderColor: "grey",
-                        padding: "20px",
+                        borderWidth: "1px",
+                        padding: "10px",
                         borderRadius: "5px",
                         width: "100%",
                         marginLeft: "4px",
@@ -412,9 +449,61 @@ function formatNumber(value: number): string {
                     }}>
                         LTV Ratio:
                     </p>
-                    <h2>
+                    <h3>
                     {collateralizationRatio}%
-                                       </h2>
+                                       </h3>
+                                       </div>
+            
+            </div>
+            <div style={{
+                display: "flex",
+                flexDirection: "row",
+                marginTop: "6px"
+            }}>
+               
+                                       <div style={{
+                        border: "solid",
+                        borderColor: "grey",
+                        borderWidth: "1px",
+                        padding: "10px",
+                        borderRadius: "5px",
+                        width: "100%",
+                        marginRight: "4px",
+                        
+                    }}>
+                
+                
+                         <p style={{
+                
+                        fontSize: "10px"
+                    }}>
+                        Deposit Fee:
+                    </p>
+                    <h3>
+                    {depositFee}%
+                                       </h3>
+                                       </div>
+                                       <div style={{
+                        border: "solid",
+                        borderColor: "grey",
+                        borderWidth: "1px",
+                        padding: "10px",
+                        borderRadius: "5px",
+                        width: "100%",
+                        marginLeft: "4px",
+                        
+                    }}>
+                
+                
+                         <p style={{
+                
+                        fontSize: "10px"
+                    }}>
+                        Withdrawal Fee:
+                    </p>
+                    <h3>
+                    {withdrawFee}%
+                                       </h3>
                                        </div>
             
             </div>
