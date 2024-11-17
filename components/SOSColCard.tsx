@@ -6,6 +6,7 @@ import SOS from "../public/SOS.svg"
 
 import sUSD from "../public/sUSD.svg"
 import ETH from "../public/ethereum-eth-logo.svg"
+import "./SOSColCard.css"
 
 
 import { approve, balanceOf } from "thirdweb/extensions/erc20";
@@ -266,21 +267,10 @@ function calculateBorrowLimitInAsset(
                                 
                             }}>
 
-                                <div style={{
-                                    display: "flex",
-                                    flexDirection: "row",
-                                    width: "100%"
+                                <div className="container"
 
-                                }}>
-                                    <div style={{
-                                        border: "solid",
-                                        borderColor: "grey",
-                                        padding: "20px",
-                                        borderRadius: "5px",
-                                        width: "100%",
-                                        marginRight: "3px",
-                                        
-                                    }}>
+                                >
+                                    <div className="box">
                                         <p style={{fontSize: "10px"}}>
                                            Wallet Balance:
                                                                     </p>
@@ -294,15 +284,7 @@ function calculateBorrowLimitInAsset(
                                              </p>
                                     </div>
                                     
-                                    <div style={{
-                                        
-                                        border: "solid",
-                                        borderColor: "grey",
-                                        padding: "20px",
-                                        borderRadius: "5px",
-                                        width: "100%",
-                                        marginLeft: "3px",
-                                    }}>
+                                    <div className="box">
                                          <p style={{
                                         fontSize: "10px"
                                     }}>
@@ -325,24 +307,10 @@ function calculateBorrowLimitInAsset(
                                 </div>
 
 
-                                <div style={{
-                                    display: "flex",
-                                    flexDirection: "row",
-                                    width: "100%",
-                                    marginTop: "6px",
-
-                                }}>
+                                <div className="container">
                                                    
                             
-                                     <div style={{
-                                    
-                                    border: "solid",
-                                    borderColor: "grey",
-                                    padding: "20px",
-                                    borderRadius: "5px",
-                                    width: "100%",
-                                    marginRight: "3px"
-                                }}>
+                                     <div className="box">
                             
                                 <p style={{fontSize: "10px"}}>
                                     Collateral Balance:
@@ -367,15 +335,7 @@ function calculateBorrowLimitInAsset(
                                      </div>
                                    
                                 
-                                     <div style={{
-                                    
-                                    border: "solid",
-                                    borderColor: "grey",
-                                    padding: "20px",
-                                    borderRadius: "5px",
-                                    width: "100%",
-                                    marginLeft: "3px",
-                                }}>
+                                     <div className="box">
 
                                      <p style={{
                                     fontSize: "10px"

@@ -1,0 +1,28 @@
+.container {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    
+}
+
+.container > .box {
+    border: solid;
+    border-color: grey;
+    border-width: 1px;
+    padding: 20px;
+    border-radius: 5px;
+    width: 100%;
+    margin: 3px;
+}
+
+@media (max-width: 768px) {
+    .container {
+        flex-direction: column;
+    }
+
+    .container > .box {
+        margin-right: 0; /* Remove horizontal margin in column layout */
+        margin-bottom: 10px; /* Optional spacing between columns */
+        
+    }
+}
