@@ -4,7 +4,7 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 
 import ETH from "../public/ethereum-eth-logo.svg"
-import "./WETHColCard.css"
+import "./WethColCard.css"
 
 
 import { approve, balanceOf } from "thirdweb/extensions/erc20";
