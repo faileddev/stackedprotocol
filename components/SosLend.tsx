@@ -455,7 +455,7 @@ function calculateBorrowLimitInAsset(
 
                     onClick={() => setIsRepaying(true)}                    
                     >
-                                Repay
+                                Repay Loan
                             </button>
                             
                         </div>

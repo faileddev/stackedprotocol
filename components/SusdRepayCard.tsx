@@ -307,7 +307,7 @@ function calculateBorrowLimitInAsset(
                                         <p style={{fontSize: "10px"}}>
                                            Wallet Balance:
                                                                     </p>
-                                              <h3>{truncate(toEther(SusdBalance!),4).toLocaleString() }<span style={{fontSize: "10px"}}> Susd</span>
+                                              <h3>{truncate(toEther(SusdBalance!),4).toLocaleString() }<span style={{fontSize: "10px"}}> sUSD</span>
                                             </h3>
                                             <p style={{
                                                             fontSize: "10px",
@@ -336,7 +336,7 @@ function calculateBorrowLimitInAsset(
                                                 truncate(toEther(collateralBalance[1] * BigInt(1)).toString(), 4).toLocaleString()
                                                 :
                                                 '...'
-                                            }<span style={{fontSize: "10px"}}> Susd</span>
+                                            }<span style={{fontSize: "10px"}}> sUSD</span>
                                                        </h3>
                                                        <p style={{
                                                         fontSize: "10px",
@@ -377,7 +377,7 @@ function calculateBorrowLimitInAsset(
                                             truncate(toEther(collateralBalance[2] * BigInt(1)).toString(), 4).toLocaleString() 
                                             : 
                                             '...'
-                                        }<span style={{fontSize: "10px"}}> Susd</span>
+                                        }<span style={{fontSize: "10px"}}> sUSD</span>
                                                    </h3>
                                                    <p style={{
                                                     fontSize: "10px",
@@ -409,7 +409,7 @@ function calculateBorrowLimitInAsset(
                                             truncate(toEther((collateralBalance[1])+(incurredInterest!)), 4).toLocaleString() 
                                             : 
                                             '...'
-                                        }<span style={{fontSize: "10px"}}> Susd</span>
+                                        }<span style={{fontSize: "10px"}}> sUSD</span>
                                                    </h3>
                                                    <p style={{
                                                     fontSize: "10px",
