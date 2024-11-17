@@ -16,6 +16,8 @@ import { addEvent } from "thirdweb/extensions/farcaster/keyRegistry";
 import Link from "next/link";
 import { getEthBalance } from "thirdweb/extensions/multicall3";
 import SOSLendCard from "./SOSLendCard";
+import SOSLendInfo from "./SOSLendInfo";
+import SOSColCard from "./SOSColCard";
 
 
 const SosLend: React.FC = () => {
@@ -1313,11 +1315,13 @@ function calculateBorrowLimitInAsset(
             <h1>
                 Lend SOS
             </h1>
-            <p style={{
-                marginTop: "10px"
+            
+            <div style={{
+                width: "380px",
+                marginTop: "20px"
             }}>
-            STACK up on your SOS and enjoy consistent returns, with interest rates designed to reward long-term stability and liquidity.
-            </p>
+            <SOSColCard />
+            </div>
             
             
 
@@ -1403,186 +1407,18 @@ padding: "5px"
             
             {lendingState === "init" ? (
                 <>
-                
+                <div style={{
+                    width: "100%"
+                }}>
+                <SOSLendInfo />
+                </div>
 
-<div style={{
-            display: "flex",
-            flexDirection: "row",
-            width: "100%",
-            marginTop: "10px",
-            justifyContent: "space-between",
-        }}>
 
-            
-        
-        <div style={{
-            display: "flex",
-            flexDirection: "column",
-            textAlign: "left"
-            
-        }} >
-            <p style={{marginTop: "10px"}}>Wallet Balance:</p>
-            
-        </div>
-        <div style={{
-            display: "flex",
-            flexDirection: "column",
-            textAlign: "right"
-            
-        }} >
-            <p style={{
-                        marginTop: "10px"
-                    }}>
-                        {truncate(toEther(SOSBalance!),4).toLocaleString() } SOS
-                    
-                        <span style={{
-                    fontSize: "10px",
-                    color: "GrayText",
-                    marginLeft: "5px"}}
-                    >
-                        ~ ${SOSBalanceInUSD}
-                        </span>
-                    
-                    </p>
-            
-        </div>
-        
-        </div>
-
-        <div style={{
-            display: "flex",
-            flexDirection: "row",
-            width: "100%",
-            justifyContent: "space-between",
-        }}>
-
-            
-        
-        <div style={{
-            display: "flex",
-            flexDirection: "column",
-            textAlign: "left"
-            
-        }} >
-            <p style={{marginTop: "10px"}}>Deposited Balance:</p>
-            
-        </div>
-        <div style={{
-            display: "flex",
-            flexDirection: "column",
-            textAlign: "right"
-            
-        }} >
-            <p style={{
-                        marginTop: "10px"
-                    }}>
-                                {collateralBalance ?
-                                    truncate(toEther(collateralBalance[0] * BigInt(1)).toString(), 4).toLocaleString()
-                                    :
-                                    '0.00'
-                                } SOS
-                        <span style={{
-                    fontSize: "10px",
-                    color: "GrayText",
-                    marginLeft: "5px"}}
-                    >
-                        ~ ${depositedBalanceInUSD}
-                        </span>
-                            </p>
-            
-        </div>
 
         
         
         
         
-        </div>
-
-
-            
-            <div style={{
-            display: "flex",
-            flexDirection: "row",
-            width: "100%",
-            justifyContent: "space-between",
-        }}>
-
-            
-        
-        <div style={{
-            display: "flex",
-            flexDirection: "column",
-            textAlign: "left"
-            
-        }} >
-            <p style={{marginTop: "10px"}}>Pool Balance:</p>
-            
-        </div>
-        <div style={{
-            display: "flex",
-            flexDirection: "column",
-            textAlign: "right"
-            
-        }} >
-            <p style={{
-                        marginTop: "10px"
-                    }}>
-                                { 
-                                    truncate(toEther(totalDeposits! * BigInt(1)).toString(), 4).toLocaleString()
-                                    
-                                } SOS
-                    <span style={{
-                    fontSize: "10px",
-                    color: "GrayText",
-                    marginLeft: "5px"}}
-                    >
-
-                       ~ ${totalDepositsInUSD}
-                    </span>
-                            </p>
-            
-        </div>
-
-        
-        
-        
-        </div>
-        <div style={{
-            display: "flex",
-            flexDirection: "row",
-            width: "100%",
-            justifyContent: "space-between",
-        }}>
-
-            
-        
-        <div style={{
-            display: "flex",
-            flexDirection: "column",
-            textAlign: "left"
-            
-        }} >
-            <p style={{marginTop: "10px"}}>Lending APR:</p>
-            
-        </div>
-        <div style={{
-            display: "flex",
-            flexDirection: "column",
-            textAlign: "right"
-            
-        }} >
-            <p style={{
-                        marginTop: "10px"
-                    }}>
-                                {depositAPR}%
-                            </p>
-            
-        </div>
-
-        
-        
-        
-        </div>
 
                 <TransactionButton
                 transaction={() => (
