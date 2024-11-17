@@ -2,22 +2,21 @@
 
 import Image from "next/image";
 import { useEffect, useState } from "react";
-import DAI from "../public/DAI.svg"
 
-import sUSD from "../public/sUSD.svg"
 import ETH from "../public/ethereum-eth-logo.svg"
+import "./DAIColCard.css"
 
 
 import { approve, balanceOf } from "thirdweb/extensions/erc20";
 import { TransactionButton, useActiveAccount, useReadContract, useWalletBalance } from "thirdweb/react";
-import { TOKEN_CONTRACT, STAKE_CONTRACT, DAI_CONTRACT, LENDING_POOL_CONTRACT, client, chain } from "../utils/constants";
+import { STAKE_CONTRACT, DAI_CONTRACT, LENDING_POOL_CONTRACT, client, chain } from "../utils/constants";
 import { prepareContractCall, readContract, toEther, toWei } from "thirdweb";
 import { addEvent } from "thirdweb/extensions/farcaster/keyRegistry";
 import Link from "next/link";
 import { getEthBalance } from "thirdweb/extensions/multicall3";
 
 
-const DaiRepayCard: React.FC = () => {
+const DaiColCard: React.FC = () => {
 
     const account = useActiveAccount();
     const [healthFactor, setHealthFactor] = useState<string | null>(null);
@@ -42,22 +41,6 @@ const DaiRepayCard: React.FC = () => {
         {
             contract: LENDING_POOL_CONTRACT,
             method: "getAccountBalances",
-            params: [ account?.address || "" , DAIContract],
-            queryOptions: {
-                enabled: !!account
-            }
-       
-    });
-
-    const { 
-        data: incurredInterest, 
-        isLoading: loadingIncurredInterest,
-        refetch: refetchIncurredInterest,
-    } = useReadContract (
-        
-        {
-            contract: LENDING_POOL_CONTRACT,
-            method: "getInterestIncurred",
             params: [ account?.address || "" , DAIContract],
             queryOptions: {
                 enabled: !!account
@@ -154,7 +137,7 @@ const DaiRepayCard: React.FC = () => {
     
     const formattedCollateralDollarValue = (Number(CollateralDollarValue) / 1e18).toFixed(2);
     const currentTime = Math.floor(Date.now() / 1000);  // Current time in seconds
-    const assetPrice = rawAssetPrice ? (Number(rawAssetPrice) / 1e8).toFixed(2) : null; // Divide by 1e8 and format to 2 decimals
+    const assetPrice = rawAssetPrice ? (Number(rawAssetPrice) / 1e8).toFixed(6) : null; // Divide by 1e8 and format to 2 decimals
     const localizedAssetPrice = assetPrice 
     ? Number(assetPrice).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) 
     : null;
@@ -169,10 +152,6 @@ const DaiRepayCard: React.FC = () => {
 
     const depositedBalanceInUSD = collateralBalance && assetPrice 
     ? (truncate(toEther(collateralBalance[0]), 4) * Number(assetPrice)).toFixed(2) 
-    : "0.00";
-
-    const totalLoanInUSD = collateralBalance && incurredInterest && assetPrice 
-    ? (truncate(toEther((collateralBalance[1]+(incurredInterest))), 4) * Number(assetPrice)).toFixed(2) 
     : "0.00";
 
     const borrowedBalanceInUSD = collateralBalance && assetPrice 
@@ -250,28 +229,25 @@ function calculateBorrowLimitInAsset(
         return Math.trunc(numericValue*factor) / factor
     }
     
-    useEffect(() => {
-        if (CollateralDollarValue && collateralizationRatio > 0) {
-          const dollarValue = parseFloat((Number(CollateralDollarValue) / 1e18).toFixed(2));
-          const calculatedBorrowableAmount = (dollarValue / collateralizationRatio) * 100;
-          setBorrowableAmount(parseFloat(calculatedBorrowableAmount.toFixed(2)));
+    function formatNumber(value: number): string {
+        if (value >= 1_000_000_000) {
+            // Format as billions
+            return `${(value / 1_000_000_000).toFixed(1)}B`;
+        } else if (value >= 1_000_000) {
+            // Format as millions
+            return `${(value / 1_000_000).toFixed(1)}M`;
+        } else if (value >= 1_000) {
+            // Format as thousands
+            return `${(value / 1_000).toFixed(1)}K`;
+        } else {
+            // Keep as is for smaller numbers
+            return value.toLocaleString();
         }
-      }, [CollateralDollarValue, collateralizationRatio]);
+    }
     
     
 
-    if (loadingEthBalance) {
-        return <p>Loading balance...</p>;
-    }
-
-    if (!ethBalance) {
-        return <p>Unable to fetch balance.</p>;
-    }
-
-    // Extract balance value (ensure the value exists)
-    const balanceValue = ethBalance.displayValue
-        ? parseFloat(ethBalance.displayValue).toLocaleString()
-        : "0.00";
+  
 
     return (
 
@@ -289,51 +265,32 @@ function calculateBorrowLimitInAsset(
                                 
                             }}>
 
-                                <div style={{
-                                    display: "flex",
-                                    flexDirection: "row",
-                                    width: "100%"
+                                <div className="container"
 
-                                }}>
-                                    <div style={{
-                                        border: "solid",
-                                        borderColor: "grey",
-                                        padding: "10px",
-                                        borderRadius: "5px",
-                                        width: "100%",
-                                        marginRight: "2px",
-                                        
-                                    }}>
+                                >
+                                    <div className="box">
                                         <p style={{fontSize: "10px"}}>
                                            Wallet Balance:
                                                                     </p>
-                                              <h3>{truncate(toEther(DAIBalance!),4).toLocaleString() }<span style={{fontSize: "10px"}}> DAI</span>
+                                              <h3>{formatNumber(truncate(toEther(DAIBalance!),4)) }<span style={{fontSize: "10px"}}> DAI</span>
                                             </h3>
                                             <p style={{
                                                             fontSize: "10px",
                                                             color: "GrayText",
                                                            }}>
-                                                ~ ${DAIBalanceInUSD}
+                                                ~ ${Number(DAIBalanceInUSD).toLocaleString()}
                                              </p>
                                     </div>
                                     
-                                    <div style={{
-                                        
-                                        border: "solid",
-                                        borderColor: "grey",
-                                        padding: "10px",
-                                        borderRadius: "5px",
-                                        width: "100%",
-                                        marginLeft: "2px",
-                                    }}>
+                                    <div className="box">
                                          <p style={{
                                         fontSize: "10px"
                                     }}>
-                                        Borrowed Balance:
+                                        Deposited Balance:
                                     </p>
                                     <h3>
                                             {collateralBalance ?
-                                                truncate(toEther(collateralBalance[1] * BigInt(1)).toString(), 4).toLocaleString()
+                                                formatNumber(truncate(toEther(collateralBalance[0]), 4))
                                                 :
                                                 '...'
                                             }<span style={{fontSize: "10px"}}> DAI</span>
@@ -342,29 +299,18 @@ function calculateBorrowLimitInAsset(
                                                         fontSize: "10px",
                                                         color: "GrayText",
                                                        }}>
-                                            ~ ${borrowedBalanceInUSD}
+                                            ~ ${Number(depositedBalanceInUSD).toLocaleString()}
                                          </p>
                                          </div>
                                 </div>
 
 
-                                <div style={{
-                                    display: "flex",
-                                    flexDirection: "row",
-                                    width: "100%"
-
-                                }}>
+                                <div className="container" >
                                                    
                             
-                                     <div style={{
-                                    marginTop: "10px",
-                                    border: "solid",
-                                    borderColor: "grey",
-                                    padding: "10px",
-                                    borderRadius: "5px",
-                                    width: "100%",
-                                    marginRight: "2px"
-                                }}>
+                                     <div className="box" 
+                                     
+                                     >
                             
                                 <p style={{fontSize: "10px"}}>
                                     Collateral Balance:
@@ -374,7 +320,7 @@ function calculateBorrowLimitInAsset(
                                       
                             <h3>
                                         {collateralBalance ? 
-                                            truncate(toEther(collateralBalance[2] * BigInt(1)).toString(), 4).toLocaleString() 
+                                            formatNumber(truncate(toEther(collateralBalance[2]), 4)) 
                                             : 
                                             '...'
                                         }<span style={{fontSize: "10px"}}> DAI</span>
@@ -389,24 +335,16 @@ function calculateBorrowLimitInAsset(
                                      </div>
                                    
                                 
-                                     <div style={{
-                                    marginTop: "10px",
-                                    border: "solid",
-                                    borderColor: "grey",
-                                    padding: "10px",
-                                    borderRadius: "5px",
-                                    width: "100%",
-                                    marginLeft: "2px",
-                                }}>
+                                     <div className="box" >
 
                                      <p style={{
                                     fontSize: "10px"
                                 }}>
-                                    Total Debt:
+                                    Borrowed Balance:
                                 </p>
                                 <h3>
                                         {collateralBalance ? 
-                                            truncate(toEther((collateralBalance[1])+(incurredInterest!)), 4).toLocaleString() 
+                                            formatNumber(truncate(toEther(collateralBalance[1]), 2)) 
                                             : 
                                             '...'
                                         }<span style={{fontSize: "10px"}}> DAI</span>
@@ -415,7 +353,7 @@ function calculateBorrowLimitInAsset(
                                                     fontSize: "10px",
                                                     color: "GrayText",
                                                    }}>
-                                        ~ ${totalLoanInUSD}
+                                        ~ ${Number(borrowedBalanceInUSD).toLocaleString()}
                                      </p>
                                      </div>
                                      </div>
@@ -425,4 +363,4 @@ function calculateBorrowLimitInAsset(
 
 )
 };
-export default DaiRepayCard;
+export default DaiColCard;

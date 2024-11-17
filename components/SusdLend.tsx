@@ -16,6 +16,10 @@ import { addEvent } from "thirdweb/extensions/farcaster/keyRegistry";
 import Link from "next/link";
 import { getEthBalance } from "thirdweb/extensions/multicall3";
 import SusdLendCard from "./SusdLendCard";
+import SusdLendPageCard from "./SusdLendPageCard";
+import SOSColCard from "./SOSColCard";
+import SusdColCard from "./SusdColCard";
+import SusdRepayCard from "./SusdRepayCard";
 
 
 const SusdLend: React.FC = () => {
@@ -392,7 +396,7 @@ function calculateBorrowLimitInAsset(
                         alignItems: "left",
                         marginTop: "40px",
                     }}>
-                        <SusdLendCard />
+                        <SusdLendPageCard />
                          
                         <div style={{
                             display: "flex",
@@ -418,7 +422,7 @@ function calculateBorrowLimitInAsset(
                                                     
                                                     onClick={() => setIsLending(true)}
                                                     >
-                                    Deposit
+                                    Lend
                                 </button>
                                 <button style={{
                                                     marginLeft: "5px",
@@ -433,7 +437,7 @@ function calculateBorrowLimitInAsset(
                                                     onClick={() => setIsDepositing(true)}
                                                     
                                                     >
-                                    Deposit Collateral
+                                    Deposit As Collateral
                                 </button>
                                 
                             </div>
@@ -451,7 +455,7 @@ function calculateBorrowLimitInAsset(
 
                     onClick={() => setIsRepaying(true)}                    
                     >
-                                Repay
+                                Repay Loan
                             </button>
                             
                         </div>
@@ -468,13 +472,13 @@ function calculateBorrowLimitInAsset(
                         top: 0,
                         left: 0,
                         width: "100%",
-                        height: "100%",
+                        height: "100vh",
                         
                         backgroundColor: "rgba(0, 0, 0, 0.5)",
                         display: "flex",
                         justifyContent: "center",
                         alignItems: "center",
-                        margin: "10px"
+                        
                         
                     }}>
                         <div style={{
@@ -485,19 +489,24 @@ function calculateBorrowLimitInAsset(
                             textAlign: "left",
                             backgroundColor: "#151515",
                             margin: "20px",
-                            padding: "40px",
+                            padding: "20px",
                             borderRadius: "10px",
+                            width: "100%",
                             maxWidth: "500px",
+                            maxHeight: "80vh", // Limits height to 90% of the viewport
+                            overflowY: "auto", // Enables vertical scrolling
                         }}>
                             
                             <h1>
-                                Collaterize sUSD
+                                Use sUSD As Collateral
                             </h1>
-                            <p style={{
-                                marginTop: "10px"
+                            
+                            <div style={{
+                            width: "100%",
+                            marginTop: "20px"
                             }}>
-                            By collateralizing your sUSD, you can unlock its full potential on our platform. When you collateralize your sUSD, it becomes a secure asset that allows you to borrow other tokens while keeping your funds working for you.
-                            </p>
+                            <SusdColCard />
+                            </div>
                             
                             
 
@@ -765,6 +774,17 @@ function calculateBorrowLimitInAsset(
                         
                         </div>
 
+                        <div 
+                style={{
+                    display: "flex",
+                    flexDirection: "row",
+                    width: "100%",
+                    gap: "6px"
+                }}>
+                    <div style={{
+                        width: "100%"
+                    }}>
+
                                 <TransactionButton
                                 transaction={() => (
                                     approve ({
@@ -780,7 +800,12 @@ function calculateBorrowLimitInAsset(
                                     width: "100%",
                                     marginTop: "10px",
                                 }}
-                                >Set Approval</TransactionButton>
+                                >Confirm Deposit</TransactionButton>
+
+</div>
+                                    <div style={{
+                                        width: "100%"
+                                    }}>
 
                                 <TransactionButton style={{width:"100%", marginTop:"10px",}}
                                  transaction={() => (
@@ -801,6 +826,9 @@ function calculateBorrowLimitInAsset(
                                 >
                                     Withdraw Collateral
                                 </TransactionButton>
+
+                                </div>
+                                </div>
                                 
                                 </>
 
@@ -878,13 +906,13 @@ function calculateBorrowLimitInAsset(
                         top: 0,
                         left: 0,
                         width: "100%",
-                        height: "100%",
+                        height: "100vh",
                         
                         backgroundColor: "rgba(0, 0, 0, 0.5)",
                         display: "flex",
                         justifyContent: "center",
                         alignItems: "center",
-                        margin: "10px"
+                        
                         
                     }}>
                         <div style={{
@@ -895,19 +923,24 @@ function calculateBorrowLimitInAsset(
                             textAlign: "left",
                             backgroundColor: "#151515",
                             margin: "20px",
-                            padding: "40px",
+                            padding: "20px",
                             borderRadius: "10px",
+                            width: "100%",
                             maxWidth: "500px",
+                            maxHeight: "80vh", // Limits height to 90% of the viewport
+                            overflowY: "auto", // Enables vertical scrolling
                         }}>
                             
                             <h1>
                                 Repay Loan
                             </h1>
-                            <p style={{
-                                marginTop: "10px"
+                            
+                            <div style={{
+                            width: "100%",
+                            marginTop: "20px"
                             }}>
-                            By collateralizing your sUSD, you can unlock its full potential on our platform. When you collateralize your sUSD, it becomes a secure asset that allows you to borrow other tokens while keeping your funds working for you.
-                            </p>
+                            <SusdRepayCard />
+                            </div>
                             
                             
 
@@ -1174,7 +1207,16 @@ function calculateBorrowLimitInAsset(
                         
                         
                         </div>
-
+<div 
+                style={{
+                    display: "flex",
+                    flexDirection: "row",
+                    width: "100%",
+                    gap: "6px"
+                }}>
+                    <div style={{
+                        width: "100%"
+                    }}>
                                 <TransactionButton
                                 transaction={() => (
                                     approve ({
@@ -1191,6 +1233,12 @@ function calculateBorrowLimitInAsset(
                                     marginTop: "10px",
                                 }}
                                 >Set Approval</TransactionButton>
+
+</div>
+                                    <div style={{
+                                        width: "100%"
+                                    }}>
+
                                 <TransactionButton style={{width:"100%", marginTop:"10px",}}
                                  transaction={() => (
                                     prepareContractCall({
@@ -1210,6 +1258,9 @@ function calculateBorrowLimitInAsset(
                                 >
                                     Withdraw Collateral
                                 </TransactionButton>
+
+                                </div>
+                                </div>
                                 
                                 </>
 
@@ -1281,42 +1332,47 @@ function calculateBorrowLimitInAsset(
 
 {isLending && (
 
-    <div 
-    style={{
-        position: "fixed",
-        top: 0,
-        left: 0,
-        width: "100%",
-        height: "100%",
-        
-        backgroundColor: "rgba(0, 0, 0, 0.5)",
+<div 
+style={{
+    position: "fixed",
+    top: 0,
+    left: 0,
+    width: "100%",
+    height: "100vh",
+    
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    
+    
+}}>
+    <div style={{
+        position: "relative",
         display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        margin: "10px"
-        
+        flexDirection: "column",
+        alignItems: "start",
+        textAlign: "left",
+        backgroundColor: "#151515",
+        margin: "20px",
+        padding: "20px",
+        borderRadius: "10px",
+        width: "100%",
+        maxWidth: "500px",
+        maxHeight: "80vh", // Limits height to 90% of the viewport
+        overflowY: "auto", // Enables vertical scrolling
     }}>
+        
+        <h1>
+            Lend sUSD
+        </h1>
+        
         <div style={{
-            position: "relative",
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "start",
-            textAlign: "left",
-            backgroundColor: "#151515",
-            margin: "20px",
-            padding: "40px",
-            borderRadius: "10px",
-            maxWidth: "500px",
+        width: "100%",
+        marginTop: "20px"
         }}>
-            
-            <h1>
-                Lend sUSD
-            </h1>
-            <p style={{
-                marginTop: "10px"
-            }}>
-            STACK up on your sUSD and enjoy consistent returns, with interest rates designed to reward long-term stability and liquidity.
-            </p>
+        <SusdColCard />
+        </div>
             
             
 
@@ -1583,6 +1639,18 @@ padding: "5px"
         
         </div>
 
+        <div 
+                style={{
+                    display: "flex",
+                    flexDirection: "row",
+                    width: "100%",
+                    gap: "6px"
+                }}>
+                    <div style={{
+                        width: "100%"
+                    }}>
+        
+
                 <TransactionButton
                 transaction={() => (
                     approve ({
@@ -1598,7 +1666,12 @@ padding: "5px"
                     width: "100%",
                     marginTop: "10px",
                 }}
-                >Set Approval</TransactionButton>
+                >Confirm Deposit</TransactionButton>
+
+</div>
+                                    <div style={{
+                                        width: "100%"
+                                    }}>
 
                                 <TransactionButton style={{width:"100%", marginTop:"10px",}}
                                  transaction={() => (
@@ -1619,6 +1692,9 @@ padding: "5px"
                                 >
                                     Withdraw
                                 </TransactionButton>
+
+                                </div>
+                                </div>
                 
                 </>
 

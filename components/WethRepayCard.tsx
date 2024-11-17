@@ -2,28 +2,26 @@
 
 import Image from "next/image";
 import { useEffect, useState } from "react";
-import DAI from "../public/DAI.svg"
 
-import sUSD from "../public/sUSD.svg"
 import ETH from "../public/ethereum-eth-logo.svg"
 
 
 import { approve, balanceOf } from "thirdweb/extensions/erc20";
 import { TransactionButton, useActiveAccount, useReadContract, useWalletBalance } from "thirdweb/react";
-import { TOKEN_CONTRACT, STAKE_CONTRACT, DAI_CONTRACT, LENDING_POOL_CONTRACT, client, chain } from "../utils/constants";
+import { STAKE_CONTRACT, WETH_CONTRACT, LENDING_POOL_CONTRACT, client, chain } from "../utils/constants";
 import { prepareContractCall, readContract, toEther, toWei } from "thirdweb";
 import { addEvent } from "thirdweb/extensions/farcaster/keyRegistry";
 import Link from "next/link";
 import { getEthBalance } from "thirdweb/extensions/multicall3";
 
 
-const DaiRepayCard: React.FC = () => {
+const WethRepayCard: React.FC = () => {
 
     const account = useActiveAccount();
     const [healthFactor, setHealthFactor] = useState<string | null>(null);
     const liquidationThreshold = 80; // Example liquidation threshold in percentage
 
-    const DAIContract = "0x50c5725949A6F0c72E6C4a641F24049A917DB0Cb";
+    const WETHContract = "0x4200000000000000000000000000000000000006";
     const [userCollateralBalance, setUserCollateralBalance] = useState<number | null>(null); // Collateral balance in the asset
 
     const [borrowableAmount, setBorrowableAmount] = useState<number | null>(null);
@@ -42,7 +40,7 @@ const DaiRepayCard: React.FC = () => {
         {
             contract: LENDING_POOL_CONTRACT,
             method: "getAccountBalances",
-            params: [ account?.address || "" , DAIContract],
+            params: [ account?.address || "" , WETHContract],
             queryOptions: {
                 enabled: !!account
             }
@@ -58,7 +56,7 @@ const DaiRepayCard: React.FC = () => {
         {
             contract: LENDING_POOL_CONTRACT,
             method: "getInterestIncurred",
-            params: [ account?.address || "" , DAIContract],
+            params: [ account?.address || "" , WETHContract],
             queryOptions: {
                 enabled: !!account
             }
@@ -74,7 +72,7 @@ const DaiRepayCard: React.FC = () => {
         {
             contract: LENDING_POOL_CONTRACT,
             method: "getCollateralValueInUSD",
-            params: [ account?.address || "" , DAIContract],
+            params: [ account?.address || "" , WETHContract],
             queryOptions: {
                 enabled: !!account
             }
@@ -90,7 +88,7 @@ const DaiRepayCard: React.FC = () => {
         {
             contract: LENDING_POOL_CONTRACT,
             method: "getPrice",
-            params: [DAIContract],
+            params: [WETHContract],
             queryOptions: {
                 enabled: !!account
             }
@@ -106,7 +104,7 @@ const DaiRepayCard: React.FC = () => {
         {
             contract: LENDING_POOL_CONTRACT,
             method: "calculateInterestRate",
-            params: [DAIContract],
+            params: [WETHContract],
             queryOptions: {
                 enabled: !!account
             }
@@ -131,13 +129,13 @@ const DaiRepayCard: React.FC = () => {
 
 
     const { 
-        data: DAIBalance, 
-        isLoading: loadingDAIBalance,
-        refetch: refetchDAIBalance
+        data: WETHBalance, 
+        isLoading: loadingWETHBalance,
+        refetch: refetchWETHBalance
     } = useReadContract (
         balanceOf,
         {
-            contract: DAI_CONTRACT,
+            contract: WETH_CONTRACT,
             address: account?.address || "",
             queryOptions: {
                 enabled: !!account
@@ -160,8 +158,8 @@ const DaiRepayCard: React.FC = () => {
     : null;
     
 
-    const DAIBalanceInUSD = DAIBalance && assetPrice 
-    ? (truncate(toEther(DAIBalance), 4) * Number(assetPrice)).toFixed(2) 
+    const WETHBalanceInUSD = WETHBalance && assetPrice 
+    ? (truncate(toEther(WETHBalance), 4) * Number(assetPrice)).toFixed(2) 
     : "0.00";
 
    
@@ -307,13 +305,13 @@ function calculateBorrowLimitInAsset(
                                         <p style={{fontSize: "10px"}}>
                                            Wallet Balance:
                                                                     </p>
-                                              <h3>{truncate(toEther(DAIBalance!),4).toLocaleString() }<span style={{fontSize: "10px"}}> DAI</span>
+                                              <h3>{truncate(toEther(WETHBalance!),4).toLocaleString() }<span style={{fontSize: "10px"}}> WETH</span>
                                             </h3>
                                             <p style={{
                                                             fontSize: "10px",
                                                             color: "GrayText",
                                                            }}>
-                                                ~ ${DAIBalanceInUSD}
+                                                ~ ${WETHBalanceInUSD}
                                              </p>
                                     </div>
                                     
@@ -336,7 +334,7 @@ function calculateBorrowLimitInAsset(
                                                 truncate(toEther(collateralBalance[1] * BigInt(1)).toString(), 4).toLocaleString()
                                                 :
                                                 '...'
-                                            }<span style={{fontSize: "10px"}}> DAI</span>
+                                            }<span style={{fontSize: "10px"}}> WETH</span>
                                                        </h3>
                                                        <p style={{
                                                         fontSize: "10px",
@@ -377,7 +375,7 @@ function calculateBorrowLimitInAsset(
                                             truncate(toEther(collateralBalance[2] * BigInt(1)).toString(), 4).toLocaleString() 
                                             : 
                                             '...'
-                                        }<span style={{fontSize: "10px"}}> DAI</span>
+                                        }<span style={{fontSize: "10px"}}> WETH</span>
                                                    </h3>
                                                    <p style={{
                                                     fontSize: "10px",
@@ -409,7 +407,7 @@ function calculateBorrowLimitInAsset(
                                             truncate(toEther((collateralBalance[1])+(incurredInterest!)), 4).toLocaleString() 
                                             : 
                                             '...'
-                                        }<span style={{fontSize: "10px"}}> DAI</span>
+                                        }<span style={{fontSize: "10px"}}> WETH</span>
                                                    </h3>
                                                    <p style={{
                                                     fontSize: "10px",
@@ -425,4 +423,4 @@ function calculateBorrowLimitInAsset(
 
 )
 };
-export default DaiRepayCard;
+export default WethRepayCard;

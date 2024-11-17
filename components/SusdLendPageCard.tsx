@@ -8,20 +8,20 @@ import ETH from "../public/ethereum-eth-logo.svg"
 
 import { approve, balanceOf } from "thirdweb/extensions/erc20";
 import { TransactionButton, useActiveAccount, useReadContract, useWalletBalance } from "thirdweb/react";
-import { TOKEN_CONTRACT, STAKE_CONTRACT, DAI_CONTRACT, LENDING_POOL_CONTRACT, client, chain } from "../utils/constants";
+import { STAKE_CONTRACT, SUSD_CONTRACT, LENDING_POOL_CONTRACT, client, chain } from "../utils/constants";
 import { prepareContractCall, readContract, toEther, toWei } from "thirdweb";
 import { addEvent } from "thirdweb/extensions/farcaster/keyRegistry";
 import Link from "next/link";
 import { getEthBalance } from "thirdweb/extensions/multicall3";
 
 
-const DaiBorrowCard: React.FC = () => {
+const SusdLendPageCard: React.FC = () => {
 
     const account = useActiveAccount();
     const [healthFactor, setHealthFactor] = useState<string | null>(null);
     const liquidationThreshold = 80; // Example liquidation threshold in percentage
 
-    const DAIContract = "0x50c5725949A6F0c72E6C4a641F24049A917DB0Cb";
+    const SusdContract = "0x65F74FD58284dAEaFaC89d122Fb0566E0629C2a0";
     const [userCollateralBalance, setUserCollateralBalance] = useState<number | null>(null); // Collateral balance in the asset
 
     const [borrowableAmount, setBorrowableAmount] = useState<number | null>(null);
@@ -48,7 +48,7 @@ const DaiBorrowCard: React.FC = () => {
         {
             contract: LENDING_POOL_CONTRACT,
             method: "getAccountBalances",
-            params: [ account?.address || "" , DAIContract],
+            params: [ account?.address || "" , SusdContract],
             queryOptions: {
                 enabled: !!account
             }
@@ -64,7 +64,7 @@ const DaiBorrowCard: React.FC = () => {
         {
             contract: LENDING_POOL_CONTRACT,
             method: "getCollateralValueInUSD",
-            params: [ account?.address || "" , DAIContract],
+            params: [ account?.address || "" , SusdContract],
             queryOptions: {
                 enabled: !!account
             }
@@ -86,7 +86,7 @@ const DaiBorrowCard: React.FC = () => {
         {
             contract: LENDING_POOL_CONTRACT,
             method: "calculateInterestRate",
-            params: [DAIContract],
+            params: [SusdContract],
             queryOptions: {
                 enabled: !!account
             }
@@ -111,13 +111,13 @@ const DaiBorrowCard: React.FC = () => {
 
 
     const { 
-        data: DAIBalance, 
-        isLoading: loadingDAIBalance,
-        refetch: refetchDAIBalance
+        data: SusdBalance, 
+        isLoading: loadingSusdBalance,
+        refetch: refetchSusdBalance
     } = useReadContract (
         balanceOf,
         {
-            contract: DAI_CONTRACT,
+            contract: SUSD_CONTRACT,
             address: account?.address || "",
             queryOptions: {
                 enabled: !!account
@@ -134,7 +134,7 @@ const DaiBorrowCard: React.FC = () => {
         {
             contract: LENDING_POOL_CONTRACT,
             method: "getPrice",
-            params: [DAIContract],
+            params: [SusdContract],
             queryOptions: {
                 enabled: !!account
             }
@@ -150,7 +150,7 @@ const DaiBorrowCard: React.FC = () => {
         {
             contract: LENDING_POOL_CONTRACT,
             method: "totalDeposits",
-            params: [DAIContract],
+            params: [SusdContract],
             queryOptions: {
                 enabled: !!account
             }
@@ -166,7 +166,7 @@ const DaiBorrowCard: React.FC = () => {
         {
             contract: LENDING_POOL_CONTRACT,
             method: "totalBorrows",
-            params: [DAIContract],
+            params: [SusdContract],
             queryOptions: {
                 enabled: !!account
             }
@@ -182,7 +182,7 @@ const DaiBorrowCard: React.FC = () => {
         {
             contract: LENDING_POOL_CONTRACT,
             method: "collateralizationRatios",
-            params: [DAIContract],
+            params: [SusdContract],
             queryOptions: {
                 enabled: !!account
             }
@@ -198,7 +198,7 @@ const DaiBorrowCard: React.FC = () => {
         {
             contract: LENDING_POOL_CONTRACT,
             method: "depositFeePercent",
-            params: [DAIContract],
+            params: [SusdContract],
             queryOptions: {
                 enabled: !!account
             }
@@ -214,7 +214,7 @@ const DaiBorrowCard: React.FC = () => {
         {
             contract: LENDING_POOL_CONTRACT,
             method: "withdrawFeePercent",
-            params: [DAIContract],
+            params: [SusdContract],
             queryOptions: {
                 enabled: !!account
             }
@@ -335,7 +335,7 @@ function formatNumber(value: number): string {
   {totalDeposits 
     ? `${formatNumber(truncate(toEther(totalDeposits), 2))}`
     : "0.0"} 
-  <span style={{fontSize: "10px"}}> DAI</span>
+  <span style={{fontSize: "10px"}}> sUSD</span>
 </h3>
                         <p style={{
                                         fontSize: "10px",
@@ -366,7 +366,7 @@ function formatNumber(value: number): string {
   {totalBorrows 
     ? `${formatNumber(truncate(toEther(totalBorrows), 4))}`
     : "0.0"} 
-  <span style={{fontSize: "10px"}}> DAI</span>
+  <span style={{fontSize: "10px"}}> sUSD</span>
 </h3>
                                    
                                    <p style={{
@@ -513,4 +513,4 @@ function formatNumber(value: number): string {
             </div>
 )
 };
-export default DaiBorrowCard;
+export default SusdLendPageCard;

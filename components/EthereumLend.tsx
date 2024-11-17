@@ -15,6 +15,9 @@ import { prepareContractCall, readContract, toEther, toWei } from "thirdweb";
 import { addEvent } from "thirdweb/extensions/farcaster/keyRegistry";
 import Link from "next/link";
 import { getEthBalance } from "thirdweb/extensions/multicall3";
+import WethLendCard from "./WethLendCard";
+import WethColCard from "./WethColCard";
+import WethRepayCard from "./WethRepayCard";
 
 
 const EthereumLend: React.FC = () => {
@@ -43,6 +46,10 @@ const EthereumLend: React.FC = () => {
     const [isDepositing, setIsDepositing] = useState(false);
     const [isWrapping, setIsWrapping] = useState(false);
     const [isLending, setIsLending] = useState(false);
+    const [repayAmount, setRepayAmount] = useState(1);
+    const [repayingState, setRepayingState] = useState<"init" | "approved">("init");
+    const [isRepaying, setIsRepaying] = useState(false);
+
     
     const { 
         data: collateralBalance, 
@@ -155,6 +162,22 @@ const EthereumLend: React.FC = () => {
             chain: chain,
             address: account?.address || "",
             
+       
+    });
+
+    const { 
+        data: incurredInterest, 
+        isLoading: loadingIncurredInterest,
+        refetch: refetchIncurredInterest,
+    } = useReadContract (
+        
+        {
+            contract: LENDING_POOL_CONTRACT,
+            method: "getInterestIncurred",
+            params: [ account?.address || "" , wethContract],
+            queryOptions: {
+                enabled: !!account
+            }
        
     });
 
@@ -374,100 +397,11 @@ function calculateBorrowLimitInAsset(
                         alignItems: "left",
                         marginTop: "40px",
                     }}>
+                        
                         <div style={{
-                            display:"flex",
-                            flexDirection: "row",
-                            justifyContent: "space-between",
+                            width: "100%"
                             }}>
-                            <div style={{
-                                display: "flex",
-                                flexDirection: "column",
-                                justifyContent: "end",
-                                alignItems: "start"
-                            }}>
-                                <p style={{fontSize: "10px"}}>
-                                   Wallet Balance:
-                            </p>
-                            
-                            
-                                      <h2>{truncate(toEther(wethBalance!),4).toLocaleString() }<span style={{fontSize: "10px"}}> WETH</span>
-                                    </h2>
-                                    <p style={{
-                                                    fontSize: "10px",
-                                                    color: "GrayText",
-                                                   }}>
-                                        ~ ${wethBalanceInUSD}
-                                     </p>
-                                     
-                                     
-                                     <p style={{
-                                    marginTop: "20px",
-                                    fontSize: "10px"
-                                }}>
-                                    Deposited Balance:
-                                </p>
-                                <h2>
-                                        {collateralBalance ? 
-                                            truncate(toEther(collateralBalance[0] * BigInt(1)).toString(), 4).toLocaleString() 
-                                            : 
-                                            '...'
-                                        }<span style={{fontSize: "10px"}}> WETH</span>
-                                                   </h2>
-                                                   <p style={{
-                                                    fontSize: "10px",
-                                                    color: "GrayText",
-                                                   }}>
-                                        ~ ${depositedBalanceInUSD}
-                                     </p>
-                                                   
-                            </div>
-                            
-                            <div style={{
-                                display: "flex",
-                                flexDirection: "column",
-                                justifyContent: "end",
-                                alignItems: "end"
-                            }}>
-                                <p style={{fontSize: "10px"}}>
-                                    Collateral Balance:
-                            </p>
-                            
-                            
-                                      
-                            <h2>
-                                        {collateralBalance ? 
-                                            truncate(toEther(collateralBalance[2] * BigInt(1)).toString(), 4).toLocaleString() 
-                                            : 
-                                            '...'
-                                        }<span style={{fontSize: "10px"}}> WETH</span>
-                                                   </h2>
-                                                   <p style={{
-                                                    fontSize: "10px",
-                                                    color: "GrayText",
-                                                   }}>
-                                        ~ ${(formattedCollateralDollarValue)}
-                                     </p>
-                                   
-                                     <p style={{
-                                    marginTop: "20px",
-                                    fontSize: "10px"
-                                }}>
-                                    Borrowed Balance:
-                                </p>
-                                <h2>
-                                        {collateralBalance ? 
-                                            truncate(toEther(collateralBalance[1] * BigInt(1)).toString(), 2).toLocaleString() 
-                                            : 
-                                            '...'
-                                        }<span style={{fontSize: "10px"}}> WETH</span>
-                                                   </h2>
-                                                   <p style={{
-                                                    fontSize: "10px",
-                                                    color: "GrayText",
-                                                   }}>
-                                        ~ ${borrowedBalanceInUSD}
-                                     </p>
-                            </div>
+                            <WethLendCard />
                         </div>
                         <div style={{
                             display: "flex",
@@ -493,7 +427,7 @@ function calculateBorrowLimitInAsset(
                                                     
                                                     onClick={() => setIsLending(true)}
                                                     >
-                                    Deposit
+                                    Lend
                                 </button>
                                 <button style={{
                                                     marginLeft: "5px",
@@ -528,6 +462,22 @@ function calculateBorrowLimitInAsset(
                     >
                                 Wrap ETH
                             </button>
+                            <button style={{
+                    marginTop: "5px",
+                    marginBottom: "5px",
+                    textAlign: "center",
+                    padding: "10px",
+                    backgroundColor: "#efefef",
+                    border: "none",
+                    borderRadius: "6px",
+                    color: "#333",
+                    fontSize: "1rem",
+                    cursor: "pointer",}}
+
+                    onClick={() => setIsRepaying(true)}                    
+                    >
+                                Repay Loan
+                            </button>
                             
                         </div>
                         
@@ -543,13 +493,13 @@ function calculateBorrowLimitInAsset(
                         top: 0,
                         left: 0,
                         width: "100%",
-                        height: "100%",
+                        height: "100vh",
                         
                         backgroundColor: "rgba(0, 0, 0, 0.5)",
                         display: "flex",
                         justifyContent: "center",
                         alignItems: "center",
-                        margin: "10px"
+                        
                         
                     }}>
                         <div style={{
@@ -560,19 +510,24 @@ function calculateBorrowLimitInAsset(
                             textAlign: "left",
                             backgroundColor: "#151515",
                             margin: "20px",
-                            padding: "40px",
+                            padding: "20px",
                             borderRadius: "10px",
+                            width: "100%",
                             maxWidth: "500px",
+                            maxHeight: "80vh", // Limits height to 90% of the viewport
+                            overflowY: "auto", // Enables vertical scrolling
                         }}>
                             
                             <h1>
-                                Collaterize WETH
+                                Use WETH as Collateral
                             </h1>
-                            <p style={{
-                                marginTop: "10px"
+                            
+                            <div style={{
+                            width: "100%",
+                            marginTop: "20px"
                             }}>
-                            By collateralizing your WETH, you can unlock its full potential on our platform. When you collateralize your WETH, it becomes a secure asset that allows you to borrow other tokens while keeping your funds working for you.
-                            </p>
+                            <WethColCard />
+                            </div>
                             
                             
 
@@ -840,6 +795,17 @@ function calculateBorrowLimitInAsset(
                         
                         </div>
 
+                        <div 
+                style={{
+                    display: "flex",
+                    flexDirection: "row",
+                    width: "100%",
+                    gap: "6px"
+                }}>
+                    <div style={{
+                        width: "100%"
+                    }}>
+
                                 <TransactionButton
                                 transaction={() => (
                                     approve ({
@@ -855,7 +821,35 @@ function calculateBorrowLimitInAsset(
                                     width: "100%",
                                     marginTop: "10px",
                                 }}
-                                >Set Approval</TransactionButton>
+                                >Confirm Payment</TransactionButton>
+
+</div>
+<div style={{
+                                        width: "100%"
+                                    }}>
+
+<TransactionButton style={{width:"100%", marginTop:"10px",}}
+                                 transaction={() => (
+                                    prepareContractCall({
+                                        contract: LENDING_POOL_CONTRACT,
+                                        method: "withdrawCollateral",
+                                        params: [WETH_CONTRACT.address, (toWei(depositAmount.toString()))],
+                                    })
+                                 )}
+                                 onTransactionConfirmed={() => {
+                                    setDepositAmount(100);
+                                    setDepositingState("init");
+                                    refetchWethBalance;
+                                    refetchcollateralBalance;
+                                    setIsDepositing(false);
+                                 }}
+                                 
+                                >
+                                    Withdraw Collateral
+                                </TransactionButton>
+
+                                </div>
+                                </div>
                                 
                                 </>
 
@@ -1209,42 +1203,47 @@ function calculateBorrowLimitInAsset(
 
 {isLending && (
 
-    <div 
-    style={{
-        position: "fixed",
-        top: 0,
-        left: 0,
-        width: "100%",
-        height: "100%",
-        
-        backgroundColor: "rgba(0, 0, 0, 0.5)",
+<div 
+style={{
+    position: "fixed",
+    top: 0,
+    left: 0,
+    width: "100%",
+    height: "100vh",
+    
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    
+    
+}}>
+    <div style={{
+        position: "relative",
         display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        margin: "10px"
-        
+        flexDirection: "column",
+        alignItems: "start",
+        textAlign: "left",
+        backgroundColor: "#151515",
+        margin: "20px",
+        padding: "20px",
+        borderRadius: "10px",
+        width: "100%",
+        maxWidth: "500px",
+        maxHeight: "80vh", // Limits height to 90% of the viewport
+        overflowY: "auto", // Enables vertical scrolling
     }}>
+        
+        <h1>
+            Lend WETH
+        </h1>
+        
         <div style={{
-            position: "relative",
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "start",
-            textAlign: "left",
-            backgroundColor: "#151515",
-            margin: "20px",
-            padding: "40px",
-            borderRadius: "10px",
-            maxWidth: "500px",
+        width: "100%",
+        marginTop: "20px"
         }}>
-            
-            <h1>
-                Lend WETH
-            </h1>
-            <p style={{
-                marginTop: "10px"
-            }}>
-            STACK up on your WETH and enjoy consistent returns, with interest rates designed to reward long-term stability and liquidity.
-            </p>
+        <WethColCard />
+        </div>
             
             
 
@@ -1511,6 +1510,18 @@ padding: "5px"
         
         </div>
 
+
+        <div 
+                style={{
+                    display: "flex",
+                    flexDirection: "row",
+                    width: "100%",
+                    gap: "6px"
+                }}>
+                    <div style={{
+                        width: "100%"
+                    }}>
+
                 <TransactionButton
                 transaction={() => (
                     approve ({
@@ -1526,7 +1537,36 @@ padding: "5px"
                     width: "100%",
                     marginTop: "10px",
                 }}
-                >Set Approval</TransactionButton>
+                >Confirm Deposit</TransactionButton>
+
+                </div>
+                <div style={{
+                                        width: "100%"
+                                    }}>
+
+
+                <TransactionButton style={{width:"100%", marginTop:"10px",}}
+                 transaction={() => (
+                    prepareContractCall({
+                        contract: LENDING_POOL_CONTRACT,
+                        method: "withdraw",
+                        params: [WETH_CONTRACT.address, (toWei(lendAmount.toString()))],
+                    })
+                 )}
+                 onTransactionConfirmed={() => {
+                    setDepositAmount(100);
+                    setLendingState("init");
+                    refetchWethBalance;
+                    refetchcollateralBalance;
+                    setIsLending(false);
+                 }}
+                 
+                >
+                    Withdraw
+                </TransactionButton>
+
+                </div>
+                </div>
                 
                 </>
 
@@ -1594,6 +1634,441 @@ padding: "5px"
         
     </div>
 )}
+{isRepaying && (
+                    <div 
+                    style={{
+                        position: "fixed",
+                        top: 0,
+                        left: 0,
+                        width: "100%",
+                        height: "100vh",
+                        
+                        backgroundColor: "rgba(0, 0, 0, 0.5)",
+                        display: "flex",
+                        justifyContent: "center",
+                        alignItems: "center",
+                        
+                        
+                    }}>
+                        <div style={{
+                            position: "relative",
+                            display: "flex",
+                            flexDirection: "column",
+                            alignItems: "start",
+                            textAlign: "left",
+                            backgroundColor: "#151515",
+                            margin: "20px",
+                            padding: "20px",
+                            borderRadius: "10px",
+                            width: "100%",
+                            maxWidth: "500px",
+                            maxHeight: "80vh", // Limits height to 90% of the viewport
+                            overflowY: "auto", // Enables vertical scrolling
+                        }}>
+                            
+                            <h1>
+                                Repay Loan
+                            </h1>
+                            
+                            <div style={{
+                            width: "100%",
+                            marginTop: "20px"
+                            }}>
+                            <WethRepayCard />
+                            </div>
+                            
+                            
+
+                            <div style={{
+                                display: "flex",
+                                flexDirection: "row",
+                                justifyContent: "space-between",
+                                width: "100%",
+                                fontSize: "10px",
+                                marginTop: "20px"
+
+                            }}>
+                                <div style={{
+                                    display: "flex",
+                                    flexDirection: "row",
+                                    justifyContent: "left",
+                                    
+                                }}>
+                                    <p >
+                                        Wallet Balance:
+                                    </p>
+                                    <p style={{
+                                        marginLeft: "5px"
+                                    }}>
+                                        {truncate(toEther(wethBalance!),4).toLocaleString() } WETH
+                                    </p>
+                                </div>
+                                <div style={{
+                                    display: "flex",
+                                    flexDirection: "row",
+                                    justifyContent: "right",
+                                    
+                                }}>
+                                    <p >
+                                        Loaned Balance:
+                                    </p>
+                                    <p style={{
+                                        marginLeft: "5px"
+                                    }}>
+                                                {collateralBalance ?
+                                                    truncate(toEther(collateralBalance[1] * BigInt(1)).toString(), 4).toLocaleString()
+                                                    :
+                                                    '0.00'
+                                                } WETH
+                                    
+                                            </p>
+                                </div>
+                            </div>
+
+        <div style={{ display: "flex", alignItems: "center", border: "1px solid #333", borderRadius: "5px", padding: "5px", marginTop: "5px", width: "100%"}}>
+
+
+                            <Image
+        src={WETH} // Logo source
+        alt="logo"
+        style={{ height: "24px", width: "24px", marginRight: "8px" }}
+    />
+                                <input
+                                type="number"
+                                placeholder="100"
+                                value={repayAmount}
+                                onChange={(e) => setRepayAmount(Number(e.target.value))}
+                                style={{
+                                    flex: 1,
+            borderLeft: "solid",
+            borderColor: "#333",
+            borderTop: "none",
+            borderBottom: "none",
+            borderRight: "none",
+            outline: "none",
+            fontSize: "18px",
+            padding: "5px"
+                                }}
+
+                                
+                                
+                                
+                                />
+
+                                </div>
+
+        
+                            
+                            {repayingState === "init" ? (
+                                <>
+                                
+
+<div style={{
+                            display: "flex",
+                            flexDirection: "row",
+                            width: "100%",
+                            marginTop: "10px",
+                            justifyContent: "space-between",
+                        }}>
+
+                            
+                        
+                        <div style={{
+                            display: "flex",
+                            flexDirection: "column",
+                            textAlign: "left"
+                            
+                        }} >
+                            <p style={{marginTop: "10px"}}>Wallet Balance:</p>
+                            
+                        </div>
+                        <div style={{
+                            display: "flex",
+                            flexDirection: "column",
+                            textAlign: "right"
+                            
+                        }} >
+                            <p style={{
+                                        marginTop: "10px"
+                                    }}>
+                                        {truncate(toEther(wethBalance!),4).toLocaleString() } WETH
+                                    
+                                        <span style={{
+                                    fontSize: "10px",
+                                    color: "GrayText",
+                                    marginLeft: "5px"}}
+                                    >
+                                        ~ ${wethBalanceInUSD}
+                                        </span>
+                                    
+                                    </p>
+                            
+                        </div>
+                        
+                        </div>
+
+                        <div style={{
+                            display: "flex",
+                            flexDirection: "row",
+                            width: "100%",
+                            justifyContent: "space-between",
+                        }}>
+
+                            
+                        
+                        <div style={{
+                            display: "flex",
+                            flexDirection: "column",
+                            textAlign: "left"
+                            
+                        }} >
+                            <p style={{marginTop: "10px"}}>Deposited Balance:</p>
+                            
+                        </div>
+                        <div style={{
+                            display: "flex",
+                            flexDirection: "column",
+                            textAlign: "right"
+                            
+                        }} >
+                            <p style={{
+                                        marginTop: "10px"
+                                    }}>
+                                                {collateralBalance ?
+                                                    truncate(toEther(collateralBalance[0] * BigInt(1)).toString(), 4).toLocaleString()
+                                                    :
+                                                    '0.00'
+                                                } WETH
+                                        <span style={{
+                                    fontSize: "10px",
+                                    color: "GrayText",
+                                    marginLeft: "5px"}}
+                                    >
+                                        ~ ${depositedBalanceInUSD}
+                                        </span>
+                                            </p>
+                            
+                        </div>
+
+                        
+                        
+                        
+                        
+                        </div>
+
+
+                            
+                            <div style={{
+                            display: "flex",
+                            flexDirection: "row",
+                            width: "100%",
+                            justifyContent: "space-between",
+                        }}>
+
+                            
+                        
+                        <div style={{
+                            display: "flex",
+                            flexDirection: "column",
+                            textAlign: "left"
+                            
+                        }} >
+                            <p style={{marginTop: "10px"}}>Collaterized Balance:</p>
+                            
+                        </div>
+                        <div style={{
+                            display: "flex",
+                            flexDirection: "column",
+                            textAlign: "right"
+                            
+                        }} >
+                            <p style={{
+                                        marginTop: "10px"
+                                    }}>
+                                                {collateralBalance ?
+                                                    truncate(toEther(collateralBalance[2] * BigInt(1)).toString(), 4).toLocaleString()
+                                                    :
+                                                    '0.00'
+                                                } WETH
+                                    <span style={{
+                                    fontSize: "10px",
+                                    color: "GrayText",
+                                    marginLeft: "5px"}}
+                                    >
+
+                                       ~ ${formattedCollateralDollarValue}
+                                    </span>
+                                            </p>
+                            
+                        </div>
+
+                        
+                        
+                        
+                        </div>
+                        <div style={{
+                            display: "flex",
+                            flexDirection: "row",
+                            width: "100%",
+                            justifyContent: "space-between",
+                        }}>
+
+                            
+                        
+                        <div style={{
+                            display: "flex",
+                            flexDirection: "column",
+                            textAlign: "left"
+                            
+                        }} >
+                            <p style={{marginTop: "10px"}}>Loan Interest:</p>
+                            
+                        </div>
+                        <div style={{
+                            display: "flex",
+                            flexDirection: "column",
+                            textAlign: "right"
+                            
+                        }} >
+                            <p style={{
+                                        marginTop: "10px"
+                                    }}>
+                                                {truncate(toEther(incurredInterest!),4) } WETH
+                                            </p>
+                            
+                        </div>
+
+                        
+                        
+                        
+                        </div>
+
+                        <div 
+                style={{
+                    display: "flex",
+                    flexDirection: "row",
+                    width: "100%",
+                    gap: "6px"
+                }}>
+                    <div style={{
+                        width: "100%"
+                    }}>
+
+                                <TransactionButton
+                                transaction={() => (
+                                    approve ({
+                                        contract: TOKEN_CONTRACT,
+                                        spender: LENDING_POOL_CONTRACT.address,
+                                        amount: repayAmount,
+                                    })
+                                )}
+                                onTransactionConfirmed={() => (
+                                    setRepayingState("approved")
+                                )}
+                                style={{
+                                    width: "100%",
+                                    marginTop: "10px",
+                                }}
+                                >Confirm Repayment</TransactionButton>
+
+</div>
+                                    <div style={{
+                                        width: "100%"
+                                    }}>
+
+                                <TransactionButton style={{width:"100%", marginTop:"10px",}}
+                                 transaction={() => (
+                                    prepareContractCall({
+                                        contract: LENDING_POOL_CONTRACT,
+                                        method: "withdrawCollateral",
+                                        params: [TOKEN_CONTRACT.address, (toWei(repayAmount.toString()))],
+                                    })
+                                 )}
+                                 onTransactionConfirmed={() => {
+                                    setDepositAmount(100);
+                                    setDepositingState("init");
+                                    refetchWethBalance;
+                                    refetchcollateralBalance;
+                                    setIsDepositing(false);
+                                 }}
+                                 
+                                >
+                                    Withdraw Collateral
+                                </TransactionButton>
+
+                                </div>
+
+                                </div>
+                                
+                                
+                                </>
+
+                                
+
+                            ) : (
+                                <>
+                                <p style={{marginTop: "10px"}}>Repay</p>
+                                <h1 style={{ marginTop: "5px"}}>{repayAmount.toLocaleString()} WETH
+                                                           
+                                    </h1>
+                                
+         
+         
+                                <TransactionButton style={{width:"100%", marginTop:"10px",}}
+                                 transaction={() => (
+                                    prepareContractCall({
+                                        contract: LENDING_POOL_CONTRACT,
+                                        method: "repay",
+                                        params: [TOKEN_CONTRACT.address, (toWei(repayAmount.toString()))],
+                                    })
+                                 )}
+                                 onTransactionConfirmed={() => {
+                                    setDepositAmount(100);
+                                    setDepositingState("init");
+                                    refetchWethBalance;
+                                    refetchcollateralBalance;
+                                    setIsRepaying(false);
+                                 }}
+                                 
+                                >
+                                    Repay Loan
+                                </TransactionButton>
+                                
+
+                                
+                                </>
+                                
+                            ) } 
+                            
+                            
+                            
+
+                        
+                            
+                            <button style={{
+                                marginTop: "10px",
+                                marginBottom: "5px",
+                                padding: "10px",
+                                backgroundColor: "#efefef",
+                                border: "none",
+                                borderRadius: "6px",
+                                color: "#333",
+                                fontSize: "1rem",
+                                cursor: "pointer",
+                                width: "100%",
+                                height: "42px"
+                                }}
+                                onClick={() => setIsRepaying(false)}
+                    
+                                    >
+
+                                    Close
+                                    </button>
+                            
+                        </div>
+                        
+                    </div>
+                )}
 
                         
                     </div>

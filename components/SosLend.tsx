@@ -18,6 +18,7 @@ import { getEthBalance } from "thirdweb/extensions/multicall3";
 import SOSLendCard from "./SOSLendCard";
 import SOSLendInfo from "./SOSLendInfo";
 import SOSColCard from "./SOSColCard";
+import SOSRepayCard from "./SOSRepayCard";
 
 
 const SosLend: React.FC = () => {
@@ -497,7 +498,7 @@ function calculateBorrowLimitInAsset(
                         }}>
                             
                             <h1>
-                                Collaterize SOS
+                                Use SOS As Collateral
                             </h1>
                             
                             <div style={{
@@ -903,13 +904,13 @@ function calculateBorrowLimitInAsset(
                         top: 0,
                         left: 0,
                         width: "100%",
-                        height: "100%",
+                        height: "100vh",
                         
                         backgroundColor: "rgba(0, 0, 0, 0.5)",
                         display: "flex",
                         justifyContent: "center",
                         alignItems: "center",
-                        margin: "10px"
+                        
                         
                     }}>
                         <div style={{
@@ -920,19 +921,24 @@ function calculateBorrowLimitInAsset(
                             textAlign: "left",
                             backgroundColor: "#151515",
                             margin: "20px",
-                            padding: "40px",
+                            padding: "20px",
                             borderRadius: "10px",
+                            width: "100%",
                             maxWidth: "500px",
+                            maxHeight: "80vh", // Limits height to 90% of the viewport
+                            overflowY: "auto", // Enables vertical scrolling
                         }}>
                             
                             <h1>
                                 Repay Loan
                             </h1>
-                            <p style={{
-                                marginTop: "10px"
+                            
+                            <div style={{
+                            width: "100%",
+                            marginTop: "20px"
                             }}>
-                            By collateralizing your SOS, you can unlock its full potential on our platform. When you collateralize your SOS, it becomes a secure asset that allows you to borrow other tokens while keeping your funds working for you.
-                            </p>
+                            <SOSRepayCard />
+                            </div>
                             
                             
 
@@ -1200,6 +1206,17 @@ function calculateBorrowLimitInAsset(
                         
                         </div>
 
+                        <div 
+                style={{
+                    display: "flex",
+                    flexDirection: "row",
+                    width: "100%",
+                    gap: "6px"
+                }}>
+                    <div style={{
+                        width: "100%"
+                    }}>
+
                                 <TransactionButton
                                 transaction={() => (
                                     approve ({
@@ -1215,7 +1232,13 @@ function calculateBorrowLimitInAsset(
                                     width: "100%",
                                     marginTop: "10px",
                                 }}
-                                >Set Approval</TransactionButton>
+                                >Confirm Repayment</TransactionButton>
+
+</div>
+                                    <div style={{
+                                        width: "100%"
+                                    }}>
+
                                 <TransactionButton style={{width:"100%", marginTop:"10px",}}
                                  transaction={() => (
                                     prepareContractCall({
@@ -1235,8 +1258,15 @@ function calculateBorrowLimitInAsset(
                                 >
                                     Withdraw Collateral
                                 </TransactionButton>
+
+                                </div>
+
+                                </div>
+                                
                                 
                                 </>
+
+                                
 
                             ) : (
                                 <>
