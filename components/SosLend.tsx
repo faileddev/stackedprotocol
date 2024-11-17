@@ -1296,7 +1296,7 @@ function calculateBorrowLimitInAsset(
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
-        margin: "10px"
+        boxSizing: "border-box"
         
     }}>
         <div style={{
@@ -1309,7 +1309,11 @@ function calculateBorrowLimitInAsset(
             margin: "20px",
             padding: "40px",
             borderRadius: "10px",
+            width: "100%",
             maxWidth: "500px",
+            maxHeight: "80vh", // Limits height to 90% of the viewport
+            overflowY: "auto", // Enables vertical scrolling
+            boxSizing: "border-box",
         }}>
             
             <h1>
@@ -1317,7 +1321,7 @@ function calculateBorrowLimitInAsset(
             </h1>
             
             <div style={{
-                width: "380px",
+                width: "100%",
                 marginTop: "20px"
             }}>
             <SOSColCard />
