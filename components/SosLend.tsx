@@ -201,7 +201,7 @@ const SosLend: React.FC = () => {
     
     const formattedCollateralDollarValue = (Number(CollateralDollarValue) / 1e18).toFixed(2);
     const currentTime = Math.floor(Date.now() / 1000);  // Current time in seconds
-    const assetPrice = rawAssetPrice ? (Number(rawAssetPrice) / 1e18).toFixed(6) : null; // Divide by 1e8 and format to 2 decimals
+    const assetPrice = rawAssetPrice ? (Number(rawAssetPrice) / 1e8).toFixed(6) : null; // Divide by 1e8 and format to 2 decimals
     const localizedAssetPrice = assetPrice 
     ? Number(assetPrice).toLocaleString(undefined, { minimumFractionDigits: 18, maximumFractionDigits: 18 }) 
     : null;

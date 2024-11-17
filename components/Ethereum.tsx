@@ -17,6 +17,7 @@ import Link from "next/link";
 import { getEthBalance } from "thirdweb/extensions/multicall3";
 import AssetCard from "./AssetCard";
 import AssetInfo from "./AssetInfo";
+import EthBottomBorrowCard from "./EthBottomBorrowCard";
 
 
 const EthereumVault: React.FC = () => {
@@ -1194,75 +1195,17 @@ useEffect(() => {
 
                                 </div>
 
+
                                 <div style={{
-                            display: "flex",
-                            flexDirection: "row",
-                            width: "100%",
-                            marginTop: "10px",
-                            justifyContent: "space-between",
-                        }}>
+                                    width: "100%"
+                                }}>
+                                <EthBottomBorrowCard />
+                                </div>
 
-                            
-
-                            
-                        
-                        <div style={{
-                            display: "flex",
-                            flexDirection: "column",
-                            textAlign: "left"
-                            
-                        }} >
-                            <p style={{marginTop: "10px"}}>Borrow APR:</p>
-                            
-                        </div>
-                        <div style={{
-                            display: "flex",
-                            flexDirection: "column",
-                            textAlign: "right"
-                            
-                        }} >
-                            <p style={{marginTop: "10px"}}>
-                            {apr}%
-                            </p>
-                            
-                        </div>
-                        
-                        </div>
+                                
                              
                             
-                            <div style={{
-                            display: "flex",
-                            flexDirection: "row",
-                            width: "100%",
-                            justifyContent: "space-between",
-                        }}>
-
                             
-
-                            
-                        
-                        <div style={{
-                            display: "flex",
-                            flexDirection: "column",
-                            textAlign: "left"
-                            
-                        }} >
-                            <p style={{marginTop: "5px"}}>Collaterization Ratio</p>
-                            
-                        </div>
-                        <div style={{
-                            display: "flex",
-                            flexDirection: "column",
-                            textAlign: "right"
-                            
-                        }} >
-                            <p style={{marginTop: "5px"}}>
-                            {collateralizationRatio}%
-                            </p>
-                            
-                        </div>
-                        
-                        </div>
 
 
                         <div style={{
