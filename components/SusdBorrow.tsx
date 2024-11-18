@@ -25,7 +25,7 @@ import SusdColInfo from "./SusdColInfo";
 import SusdRepayInfo from "./SusdRepayInfo";
 
 
-const SusdLend: React.FC = () => {
+const SusdBorrow: React.FC = () => {
 
     const account = useActiveAccount();
     const [healthFactor, setHealthFactor] = useState<string | null>(null);
@@ -44,14 +44,13 @@ const SusdLend: React.FC = () => {
     
 
     const [depositAmount, setDepositAmount] = useState(1);
-    const [lendAmount, setLendAmount] = useState(0);
+    const [borrowAmount, setBorrowAmount] = useState(0);
     const [repayAmount, setRepayAmount] = useState(1);
     const [depositingState, setDepositingState] = useState<"init" | "approved">("init");
-    const [lendingState, setLendingState] = useState<"init" | "approved">("init");
     const [repayingState, setRepayingState] = useState<"init" | "approved">("init");
     const [isDepositing, setIsDepositing] = useState(false);
     const [isRepaying, setIsRepaying] = useState(false);
-    const [isLending, setIsLending] = useState(false);
+    const [isBorrowing, setIsBorrowing] = useState(false);
     
     const { 
         data: collateralBalance, 
@@ -412,23 +411,9 @@ function calculateBorrowLimitInAsset(
                                 marginTop: "20px",
                                 marginBottom: "5px",
                             }}>
+                                
                                 <button style={{
                                                     marginRight: "5px",
-                                                    padding: "10px",
-                                                    backgroundColor: "#efefef",
-                                                    border: "none",
-                                                    borderRadius: "6px",
-                                                    color: "#333",
-                                                    fontSize: "1rem",
-                                                    cursor: "pointer",
-                                                    width: "100%",}}
-                                                    
-                                                    onClick={() => setIsLending(true)}
-                                                    >
-                                    Lend
-                                </button>
-                                <button style={{
-                                                    marginLeft: "5px",
                                                     padding: "10px",
                                                     backgroundColor: "#efefef",
                                                     border: "none",
@@ -441,6 +426,21 @@ function calculateBorrowLimitInAsset(
                                                     
                                                     >
                                     Deposit Collateral
+                                </button>
+                                <button style={{
+                                                    marginLeft: "5px",
+                                                    padding: "10px",
+                                                    backgroundColor: "#efefef",
+                                                    border: "none",
+                                                    borderRadius: "6px",
+                                                    color: "#333",
+                                                    fontSize: "1rem",
+                                                    cursor: "pointer",
+                                                    width: "100%",}}
+                                                    
+                                                    onClick={() => setIsBorrowing(true)}
+                                                    >
+                                    Borrow
                                 </button>
                                 
                             </div>
@@ -670,25 +670,7 @@ function calculateBorrowLimitInAsset(
                                 
          
          
-                                <TransactionButton style={{width:"100%", marginTop:"10px",}}
-                                 transaction={() => (
-                                    prepareContractCall({
-                                        contract: LENDING_POOL_CONTRACT,
-                                        method: "depositCollateral",
-                                        params: [SUSD_CONTRACT.address, (toWei(depositAmount.toString()))],
-                                    })
-                                 )}
-                                 onTransactionConfirmed={() => {
-                                    setDepositAmount(100);
-                                    setDepositingState("init");
-                                    refetchSUSDBalance;
-                                    refetchcollateralBalance;
-                                    setIsDepositing(false);
-                                 }}
-                                 
-                                >
-                                    Deposit Collateral
-                                </TransactionButton>
+                                
                                 
 
                                 
@@ -887,7 +869,7 @@ function calculateBorrowLimitInAsset(
                                     width: "100%",
                                     marginTop: "10px",
                                 }}
-                                >Set Approval</TransactionButton>
+                                >Confirm Repayment</TransactionButton>
 
 </div>
                                     <div style={{
@@ -985,7 +967,7 @@ function calculateBorrowLimitInAsset(
                 )}
                 
 
-{isLending && (
+{isBorrowing && (
 
 <div 
 style={{
@@ -1019,14 +1001,14 @@ style={{
     }}>
         
         <h1>
-            Lend sUSD
+            Borrow sUSD
         </h1>
         
         <div style={{
         width: "100%",
         marginTop: "20px"
         }}>
-        <SusdColCard />
+        <SusdRepayCard />
         </div>
             
             
@@ -1088,8 +1070,8 @@ style={{ height: "24px", width: "24px", marginRight: "8px" }}
                 <input
                 type="number"
                 placeholder="100"
-                value={lendAmount}
-                onChange={(e) => setLendAmount(Number(e.target.value))}
+                value={borrowAmount}
+                onChange={(e) => setBorrowAmount(Number(e.target.value))}
                 style={{
                     flex: 1,
 borderLeft: "solid",
@@ -1111,14 +1093,14 @@ padding: "5px"
 
 
             
-            {lendingState === "init" ? (
-                <>
+            
+                
                 
 
                 <div style={{
                     width: "100%"
                 }}>  
-            <SusdLendInfo />
+            <SusdRepayInfo />
             </div>
         
         
@@ -1136,22 +1118,24 @@ padding: "5px"
                     }}>
         
 
-                <TransactionButton
-                transaction={() => (
-                    approve ({
-                        contract: SUSD_CONTRACT,
-                        spender: LENDING_POOL_CONTRACT.address,
-                        amount: lendAmount,
+        <TransactionButton style={{width:"100%", marginTop:"10px",}}
+                 transaction={() => (
+                    prepareContractCall({
+                        contract: LENDING_POOL_CONTRACT,
+                        method: "borrow",
+                        params: [SUSD_CONTRACT.address, (toWei(borrowAmount.toString()))],
                     })
-                )}
-                onTransactionConfirmed={() => (
-                    setLendingState("approved")
-                )}
-                style={{
-                    width: "100%",
-                    marginTop: "10px",
-                }}
-                >Confirm Deposit</TransactionButton>
+                 )}
+                 onTransactionConfirmed={() => {
+                    setDepositAmount(100);
+                    refetchSUSDBalance;
+                    refetchcollateralBalance;
+                    setIsBorrowing(false);
+                 }}
+                 
+                >
+                    Borrow
+                </TransactionButton>
 
 </div>
                                     <div style={{
@@ -1162,61 +1146,37 @@ padding: "5px"
                                  transaction={() => (
                                     prepareContractCall({
                                         contract: LENDING_POOL_CONTRACT,
-                                        method: "withdraw",
-                                        params: [SUSD_CONTRACT.address, (toWei(lendAmount.toString()))],
+                                        method: "withdrawCollateral",
+                                        params: [SUSD_CONTRACT.address, (toWei(borrowAmount.toString()))],
                                     })
                                  )}
                                  onTransactionConfirmed={() => {
-                                    setLendAmount(100);
-                                    setLendingState("init");
+                                    setBorrowAmount(100);
                                     refetchSUSDBalance;
                                     refetchcollateralBalance;
-                                    setIsLending(false);
+                                    setIsBorrowing(false);
                                  }}
                                  
                                 >
-                                    Withdraw
+                                    Withdraw Collateral
                                 </TransactionButton>
 
                                 </div>
                                 </div>
                 
-                </>
+              
 
-            ) : (
-                <>
-                <p style={{marginTop: "10px"}}>Lend</p>
-                <h1 style={{ marginTop: "5px"}}>{lendAmount.toLocaleString()} sUSD
-                                           
-                    </h1>
+            
                 
 
 
-                <TransactionButton style={{width:"100%", marginTop:"10px",}}
-                 transaction={() => (
-                    prepareContractCall({
-                        contract: LENDING_POOL_CONTRACT,
-                        method: "deposit",
-                        params: [SUSD_CONTRACT.address, (toWei(lendAmount.toString()))],
-                    })
-                 )}
-                 onTransactionConfirmed={() => {
-                    setDepositAmount(100);
-                    setLendingState("init");
-                    refetchSUSDBalance;
-                    refetchcollateralBalance;
-                    setIsLending(false);
-                 }}
-                 
-                >
-                    Lend
-                </TransactionButton>
+                
                 
 
                 
-                </>
                 
-            ) } 
+                
+          
             
             
             
@@ -1236,7 +1196,7 @@ padding: "5px"
                 width: "100%",
                 height: "42px"
                 }}
-                onClick={() => setIsLending(false)}
+                onClick={() => setIsBorrowing(false)}
     
                     >
 
@@ -1254,5 +1214,5 @@ padding: "5px"
                     </div>
                     )
                     };
-                    export default SusdLend;
+                    export default SusdBorrow;
                     

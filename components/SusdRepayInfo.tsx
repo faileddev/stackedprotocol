@@ -688,7 +688,10 @@ useEffect(() => {
                                     color: "GrayText",
                                     marginTop: "5px"}}>
                             
-                            {truncate(toEther(incurredInterest!),4) } sUSD
+                            
+                            {incurredInterest 
+    ? `${truncate(toEther(incurredInterest), 4)}`
+    : "0.0"} sUSD
 
  </p>
                             

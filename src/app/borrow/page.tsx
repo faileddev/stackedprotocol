@@ -16,6 +16,8 @@ import MoneyMarketTable from "../../../components/MoneyMarketTable";
 import VaultOne from "../../../components/vaultOne";
 import EthereumVault from "../../../components/Ethereum";
 import DaiVault from "../../../components/Dai";
+import SusdBorrow from "../../../components/SusdBorrow";
+import SosBorrow from "../../../components/SosBorrow";
 
 const borrowPage = () => {
   const account = useActiveAccount();
@@ -93,6 +95,10 @@ const borrowPage = () => {
                 <EthereumVault />
 
                 <DaiVault />
+
+                <SusdBorrow />
+
+                <SosBorrow />
 
             
             

@@ -2,36 +2,34 @@
 
 import Image from "next/image";
 import { useEffect, useState } from "react";
-import SUSD from "../public/susdcoin.svg"
+import SOS from "../public/red logo.svg"
 
-import sUSD from "../public/sUSD.svg"
+
 import ETH from "../public/ethereum-eth-logo.svg"
 
 
 import { approve, balanceOf } from "thirdweb/extensions/erc20";
 import { TransactionButton, useActiveAccount, useReadContract, useWalletBalance } from "thirdweb/react";
-import { TOKEN_CONTRACT, STAKE_CONTRACT, SUSD_CONTRACT, LENDING_POOL_CONTRACT, client, chain } from "../utils/constants";
+import { STAKE_CONTRACT, TOKEN_CONTRACT, LENDING_POOL_CONTRACT, client, chain } from "../utils/constants";
 import { prepareContractCall, readContract, toEther, toWei } from "thirdweb";
 import { addEvent } from "thirdweb/extensions/farcaster/keyRegistry";
 import Link from "next/link";
 import { getEthBalance } from "thirdweb/extensions/multicall3";
-import SusdLendCard from "./SusdLendCard";
-import SusdLendPageCard from "./SusdLendPageCard";
+import SOSLendCard from "./SOSLendCard";
+import SOSLendInfo from "./SOSLendInfo";
 import SOSColCard from "./SOSColCard";
-import SusdColCard from "./SusdColCard";
-import SusdRepayCard from "./SusdRepayCard";
-import SusdLendInfo from "./SusdLendinfo";
-import SusdColInfo from "./SusdColInfo";
-import SusdRepayInfo from "./SusdRepayInfo";
+import SOSRepayCard from "./SOSRepayCard";
+import SosColInfo from "./SosColInfo";
+import SosRepayInfo from "./SosRepayInfo";
 
 
-const SusdLend: React.FC = () => {
+const SosBorrow: React.FC = () => {
 
     const account = useActiveAccount();
     const [healthFactor, setHealthFactor] = useState<string | null>(null);
     const liquidationThreshold = 80; // Example liquidation threshold in percentage
 
-    const SUSDContract = "0x65F74FD58284dAEaFaC89d122Fb0566E0629C2a0";
+    const SOSContract = "0xf63Fca327C555408819e26eDAc30F83E55a119f4";
     const [userCollateralBalance, setUserCollateralBalance] = useState<number | null>(null); // Collateral balance in the asset
 
     const [borrowableAmount, setBorrowableAmount] = useState<number | null>(null);
@@ -44,14 +42,13 @@ const SusdLend: React.FC = () => {
     
 
     const [depositAmount, setDepositAmount] = useState(1);
-    const [lendAmount, setLendAmount] = useState(0);
+    const [borrowAmount, setBorrowAmount] = useState(0);
     const [repayAmount, setRepayAmount] = useState(1);
     const [depositingState, setDepositingState] = useState<"init" | "approved">("init");
-    const [lendingState, setLendingState] = useState<"init" | "approved">("init");
     const [repayingState, setRepayingState] = useState<"init" | "approved">("init");
     const [isDepositing, setIsDepositing] = useState(false);
     const [isRepaying, setIsRepaying] = useState(false);
-    const [isLending, setIsLending] = useState(false);
+    const [isBorrowing, setIsBorrowing] = useState(false);
     
     const { 
         data: collateralBalance, 
@@ -62,7 +59,7 @@ const SusdLend: React.FC = () => {
         {
             contract: LENDING_POOL_CONTRACT,
             method: "getAccountBalances",
-            params: [ account?.address || "" , SUSDContract],
+            params: [ account?.address || "" , SOSContract],
             queryOptions: {
                 enabled: !!account
             }
@@ -80,7 +77,7 @@ const SusdLend: React.FC = () => {
         {
             contract: LENDING_POOL_CONTRACT,
             method: "getCollateralValueInUSD",
-            params: [ account?.address || "" , SUSDContract],
+            params: [ account?.address || "" , SOSContract],
             queryOptions: {
                 enabled: !!account
             }
@@ -96,7 +93,7 @@ const SusdLend: React.FC = () => {
         {
             contract: LENDING_POOL_CONTRACT,
             method: "getPrice",
-            params: [SUSDContract],
+            params: [SOSContract],
             queryOptions: {
                 enabled: !!account
             }
@@ -112,7 +109,7 @@ const SusdLend: React.FC = () => {
         {
             contract: LENDING_POOL_CONTRACT,
             method: "getInterestIncurred",
-            params: [ account?.address || "" , SUSDContract],
+            params: [ account?.address || "" , SOSContract],
             queryOptions: {
                 enabled: !!account
             }
@@ -128,7 +125,7 @@ const SusdLend: React.FC = () => {
         {
             contract: LENDING_POOL_CONTRACT,
             method: "totalDeposits",
-            params: [SUSDContract],
+            params: [SOSContract],
             queryOptions: {
                 enabled: !!account
             }
@@ -144,7 +141,7 @@ const SusdLend: React.FC = () => {
         {
             contract: LENDING_POOL_CONTRACT,
             method: "totalBorrows",
-            params: [SUSDContract],
+            params: [SOSContract],
             queryOptions: {
                 enabled: !!account
             }
@@ -160,7 +157,7 @@ const SusdLend: React.FC = () => {
         {
             contract: LENDING_POOL_CONTRACT,
             method: "calculateInterestRate",
-            params: [SUSDContract],
+            params: [SOSContract],
             queryOptions: {
                 enabled: !!account
             }
@@ -185,13 +182,13 @@ const SusdLend: React.FC = () => {
 
 
     const { 
-        data: SUSDBalance, 
-        isLoading: loadingSUSDBalance,
-        refetch: refetchSUSDBalance
+        data: SOSBalance, 
+        isLoading: loadingSOSBalance,
+        refetch: refetchSOSBalance
     } = useReadContract (
         balanceOf,
         {
-            contract: SUSD_CONTRACT,
+            contract: TOKEN_CONTRACT,
             address: account?.address || "",
             queryOptions: {
                 enabled: !!account
@@ -208,14 +205,14 @@ const SusdLend: React.FC = () => {
     
     const formattedCollateralDollarValue = (Number(CollateralDollarValue) / 1e18).toFixed(2);
     const currentTime = Math.floor(Date.now() / 1000);  // Current time in seconds
-    const assetPrice = rawAssetPrice ? (Number(rawAssetPrice) / 1e8).toFixed(2) : null; // Divide by 1e8 and format to 2 decimals
+    const assetPrice = rawAssetPrice ? (Number(rawAssetPrice) / 1e8).toFixed(6) : null; // Divide by 1e8 and format to 2 decimals
     const localizedAssetPrice = assetPrice 
-    ? Number(assetPrice).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) 
+    ? Number(assetPrice).toLocaleString(undefined, { minimumFractionDigits: 18, maximumFractionDigits: 18 }) 
     : null;
     
 
-    const SUSDBalanceInUSD = SUSDBalance && assetPrice 
-    ? (truncate(toEther(SUSDBalance), 4) * Number(assetPrice)).toFixed(2) 
+    const SOSBalanceInUSD = SOSBalance && assetPrice 
+    ? (truncate(toEther(SOSBalance), 4) * Number(assetPrice)).toFixed(2) 
     : "0.00";
 
    
@@ -366,7 +363,7 @@ function calculateBorrowLimitInAsset(
                         >
                             
                             <Image style={{height: "36px", width: "36px", marginLeft: "5px"}}
-                    src={SUSD}
+                    src={SOS}
                     alt='logo'
                     />      
                         <div style={{ marginLeft: "5px"}}>
@@ -376,7 +373,8 @@ function calculateBorrowLimitInAsset(
                                 Price:
                             </p>
                             <h3>
-                            {localizedAssetPrice}
+                            
+                            {assetPrice}
                             </h3>
                         </div>
                             
@@ -385,8 +383,8 @@ function calculateBorrowLimitInAsset(
                         <div style={{textAlign: "right"}}>
                             
                             
-                            <h1>sUSD</h1>
-                            <p style={{ fontSize: "12px" }}>sUSD Stablecoin</p>
+                            <h1>SOS</h1>
+                            <p style={{ fontSize: "12px" }}>Stacks Of Sats</p>
                         </div>
                     </div>
                     
@@ -399,7 +397,7 @@ function calculateBorrowLimitInAsset(
                         alignItems: "left",
                         marginTop: "40px",
                     }}>
-                        <SusdLendPageCard />
+                        <SOSLendCard />
                          
                         <div style={{
                             display: "flex",
@@ -423,9 +421,9 @@ function calculateBorrowLimitInAsset(
                                                     cursor: "pointer",
                                                     width: "100%",}}
                                                     
-                                                    onClick={() => setIsLending(true)}
+                                                    onClick={() => setIsBorrowing(true)}
                                                     >
-                                    Lend
+                                    Borrow
                                 </button>
                                 <button style={{
                                                     marginLeft: "5px",
@@ -501,16 +499,15 @@ function calculateBorrowLimitInAsset(
                         }}>
                             
                             <h1>
-                                Use sUSD As Collateral
+                                Use SOS As Collateral
                             </h1>
                             
                             <div style={{
                             width: "100%",
                             marginTop: "20px"
                             }}>
-                            <SusdColCard />
+                            <SOSColCard />
                             </div>
-                            
                             
 
                             <div style={{
@@ -534,7 +531,7 @@ function calculateBorrowLimitInAsset(
                                     <p style={{
                                         marginLeft: "5px"
                                     }}>
-                                        {truncate(toEther(SUSDBalance!),4).toLocaleString() } sUSD
+                                        {truncate(toEther(SOSBalance!),4).toLocaleString() } SOS
                                     </p>
                                 </div>
                                 <div style={{
@@ -553,7 +550,7 @@ function calculateBorrowLimitInAsset(
                                                     truncate(toEther(collateralBalance[0] * BigInt(1)).toString(), 4).toLocaleString()
                                                     :
                                                     '0.00'
-                                                } sUSD
+                                                } SOS
                                     
                                             </p>
                                 </div>
@@ -563,7 +560,7 @@ function calculateBorrowLimitInAsset(
 
 
                             <Image
-        src={SUSD} // Logo source
+        src={SOS} // Logo source
         alt="logo"
         style={{ height: "24px", width: "24px", marginRight: "8px" }}
     />
@@ -599,10 +596,9 @@ function calculateBorrowLimitInAsset(
 
                                 <div style={{
                     width: "100%"
-                }}>  
-            <SusdColInfo />
-            </div>
-
+                }}>
+                <SosColInfo />
+                </div>
                         <div 
                 style={{
                     display: "flex",
@@ -613,11 +609,10 @@ function calculateBorrowLimitInAsset(
                     <div style={{
                         width: "100%"
                     }}>
-
                                 <TransactionButton
                                 transaction={() => (
                                     approve ({
-                                        contract: SUSD_CONTRACT,
+                                        contract: TOKEN_CONTRACT,
                                         spender: LENDING_POOL_CONTRACT.address,
                                         amount: depositAmount,
                                     })
@@ -631,8 +626,8 @@ function calculateBorrowLimitInAsset(
                                 }}
                                 >Confirm Deposit</TransactionButton>
 
-</div>
-                                    <div style={{
+                                </div>
+                                <div style={{
                                         width: "100%"
                                     }}>
 
@@ -641,13 +636,13 @@ function calculateBorrowLimitInAsset(
                                     prepareContractCall({
                                         contract: LENDING_POOL_CONTRACT,
                                         method: "withdrawCollateral",
-                                        params: [SUSD_CONTRACT.address, (toWei(depositAmount.toString()))],
+                                        params: [TOKEN_CONTRACT.address, (toWei(depositAmount.toString()))],
                                     })
                                  )}
                                  onTransactionConfirmed={() => {
                                     setDepositAmount(100);
                                     setDepositingState("init");
-                                    refetchSUSDBalance;
+                                    refetchSOSBalance;
                                     refetchcollateralBalance;
                                     setIsDepositing(false);
                                  }}
@@ -655,8 +650,8 @@ function calculateBorrowLimitInAsset(
                                 >
                                     Withdraw Collateral
                                 </TransactionButton>
-
                                 </div>
+
                                 </div>
                                 
                                 </>
@@ -664,24 +659,24 @@ function calculateBorrowLimitInAsset(
                             ) : (
                                 <>
                                 <p style={{marginTop: "10px"}}>Collaterize</p>
-                                <h1 style={{ marginTop: "5px"}}>{depositAmount.toLocaleString()} sUSD
+                                <h1 style={{ marginTop: "5px"}}>{depositAmount.toLocaleString()} SOS
                                                            
                                     </h1>
                                 
          
-         
+                                
                                 <TransactionButton style={{width:"100%", marginTop:"10px",}}
                                  transaction={() => (
                                     prepareContractCall({
                                         contract: LENDING_POOL_CONTRACT,
                                         method: "depositCollateral",
-                                        params: [SUSD_CONTRACT.address, (toWei(depositAmount.toString()))],
+                                        params: [TOKEN_CONTRACT.address, (toWei(depositAmount.toString()))],
                                     })
                                  )}
                                  onTransactionConfirmed={() => {
                                     setDepositAmount(100);
                                     setDepositingState("init");
-                                    refetchSUSDBalance;
+                                    refetchSOSBalance;
                                     refetchcollateralBalance;
                                     setIsDepositing(false);
                                  }}
@@ -689,6 +684,7 @@ function calculateBorrowLimitInAsset(
                                 >
                                     Deposit Collateral
                                 </TransactionButton>
+                                
                                 
 
                                 
@@ -768,7 +764,7 @@ function calculateBorrowLimitInAsset(
                             width: "100%",
                             marginTop: "20px"
                             }}>
-                            <SusdRepayCard />
+                            <SOSRepayCard />
                             </div>
                             
                             
@@ -794,7 +790,7 @@ function calculateBorrowLimitInAsset(
                                     <p style={{
                                         marginLeft: "5px"
                                     }}>
-                                        {truncate(toEther(SUSDBalance!),4).toLocaleString() } sUSD
+                                        {truncate(toEther(SOSBalance!),4).toLocaleString() } SOS
                                     </p>
                                 </div>
                                 <div style={{
@@ -813,7 +809,7 @@ function calculateBorrowLimitInAsset(
                                                     truncate(toEther(collateralBalance[1] * BigInt(1)).toString(), 4).toLocaleString()
                                                     :
                                                     '0.00'
-                                                } sUSD
+                                                } SOS
                                     
                                             </p>
                                 </div>
@@ -823,7 +819,7 @@ function calculateBorrowLimitInAsset(
 
 
                             <Image
-        src={SUSD} // Logo source
+        src={SOS} // Logo source
         alt="logo"
         style={{ height: "24px", width: "24px", marginRight: "8px" }}
     />
@@ -859,10 +855,11 @@ function calculateBorrowLimitInAsset(
 
                                 <div style={{
                     width: "100%"
-                }}>  
-            <SusdRepayInfo />
-            </div>
-<div 
+                }}>
+                <SosRepayInfo />
+                </div>
+
+                        <div 
                 style={{
                     display: "flex",
                     flexDirection: "row",
@@ -872,10 +869,11 @@ function calculateBorrowLimitInAsset(
                     <div style={{
                         width: "100%"
                     }}>
+
                                 <TransactionButton
                                 transaction={() => (
                                     approve ({
-                                        contract: SUSD_CONTRACT,
+                                        contract: TOKEN_CONTRACT,
                                         spender: LENDING_POOL_CONTRACT.address,
                                         amount: repayAmount,
                                     })
@@ -887,7 +885,7 @@ function calculateBorrowLimitInAsset(
                                     width: "100%",
                                     marginTop: "10px",
                                 }}
-                                >Set Approval</TransactionButton>
+                                >Confirm Repayment</TransactionButton>
 
 </div>
                                     <div style={{
@@ -899,13 +897,13 @@ function calculateBorrowLimitInAsset(
                                     prepareContractCall({
                                         contract: LENDING_POOL_CONTRACT,
                                         method: "withdrawCollateral",
-                                        params: [SUSD_CONTRACT.address, (toWei(repayAmount.toString()))],
+                                        params: [TOKEN_CONTRACT.address, (toWei(repayAmount.toString()))],
                                     })
                                  )}
                                  onTransactionConfirmed={() => {
                                     setDepositAmount(100);
                                     setDepositingState("init");
-                                    refetchSUSDBalance;
+                                    refetchSOSBalance;
                                     refetchcollateralBalance;
                                     setIsDepositing(false);
                                  }}
@@ -915,14 +913,18 @@ function calculateBorrowLimitInAsset(
                                 </TransactionButton>
 
                                 </div>
+
                                 </div>
                                 
+                                
                                 </>
+
+                                
 
                             ) : (
                                 <>
                                 <p style={{marginTop: "10px"}}>Repay</p>
-                                <h1 style={{ marginTop: "5px"}}>{repayAmount.toLocaleString()} sUSD
+                                <h1 style={{ marginTop: "5px"}}>{repayAmount.toLocaleString()} SOS
                                                            
                                     </h1>
                                 
@@ -933,13 +935,13 @@ function calculateBorrowLimitInAsset(
                                     prepareContractCall({
                                         contract: LENDING_POOL_CONTRACT,
                                         method: "repay",
-                                        params: [SUSD_CONTRACT.address, (toWei(repayAmount.toString()))],
+                                        params: [TOKEN_CONTRACT.address, (toWei(repayAmount.toString()))],
                                     })
                                  )}
                                  onTransactionConfirmed={() => {
                                     setDepositAmount(100);
                                     setDepositingState("init");
-                                    refetchSUSDBalance;
+                                    refetchSOSBalance;
                                     refetchcollateralBalance;
                                     setIsRepaying(false);
                                  }}
@@ -985,49 +987,50 @@ function calculateBorrowLimitInAsset(
                 )}
                 
 
-{isLending && (
+{isBorrowing && (
 
-<div 
-style={{
-    position: "fixed",
-    top: 0,
-    left: 0,
-    width: "100%",
-    height: "100vh",
-    
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    
-    
-}}>
-    <div style={{
-        position: "relative",
+    <div 
+    style={{
+        position: "fixed",
+        top: 0,
+        left: 0,
+        width: "100%",
+        height: "100%",
+        
+        backgroundColor: "rgba(0, 0, 0, 0.5)",
         display: "flex",
-        flexDirection: "column",
-        alignItems: "start",
-        textAlign: "left",
-        backgroundColor: "#151515",
-        margin: "20px",
-        padding: "20px",
-        borderRadius: "10px",
-        width: "100%",
-        maxWidth: "500px",
-        maxHeight: "80vh", // Limits height to 90% of the viewport
-        overflowY: "auto", // Enables vertical scrolling
+        justifyContent: "center",
+        alignItems: "center",
+        
+        
     }}>
-        
-        <h1>
-            Lend sUSD
-        </h1>
-        
         <div style={{
-        width: "100%",
-        marginTop: "20px"
+            position: "relative",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "start",
+            textAlign: "left",
+            backgroundColor: "#151515",
+            margin: "20px",
+            padding: "20px",
+            borderRadius: "10px",
+            width: "100%",
+            maxWidth: "500px",
+            maxHeight: "80vh", // Limits height to 90% of the viewport
+            overflowY: "auto", // Enables vertical scrolling
+            
         }}>
-        <SusdColCard />
-        </div>
+            
+            <h1>
+                Borrow SOS
+            </h1>
+            
+            <div style={{
+                width: "100%",
+                marginTop: "20px"
+            }}>
+            <SOSRepayCard />
+            </div>
             
             
 
@@ -1052,7 +1055,7 @@ style={{
                     <p style={{
                         marginLeft: "5px"
                     }}>
-                        {truncate(toEther(SUSDBalance!),4).toLocaleString() } sUSD
+                        {truncate(toEther(SOSBalance!),4).toLocaleString() } SOS
                     </p>
                 </div>
                 <div style={{
@@ -1071,7 +1074,7 @@ style={{
                                     truncate(toEther(collateralBalance[0] * BigInt(1)).toString(), 4).toLocaleString()
                                     :
                                     '0.00'
-                                } sUSD
+                                } SOS
                     
                             </p>
                 </div>
@@ -1081,15 +1084,15 @@ style={{
 
 
             <Image
-src={SUSD} // Logo source
+src={SOS} // Logo source
 alt="logo"
 style={{ height: "24px", width: "24px", marginRight: "8px" }}
 />
                 <input
                 type="number"
                 placeholder="100"
-                value={lendAmount}
-                onChange={(e) => setLendAmount(Number(e.target.value))}
+                value={borrowAmount}
+                onChange={(e) => setBorrowAmount(Number(e.target.value))}
                 style={{
                     flex: 1,
 borderLeft: "solid",
@@ -1111,20 +1114,21 @@ padding: "5px"
 
 
             
-            {lendingState === "init" ? (
-                <>
                 
-
                 <div style={{
                     width: "100%"
-                }}>  
-            <SusdLendInfo />
-            </div>
-        
-        
-            
+                }}>
+                <SosRepayInfo />
+                </div>
 
-        <div 
+
+
+        
+        
+        
+        
+
+                <div 
                 style={{
                     display: "flex",
                     flexDirection: "row",
@@ -1134,89 +1138,55 @@ padding: "5px"
                     <div style={{
                         width: "100%"
                     }}>
-        
-
-                <TransactionButton
-                transaction={() => (
-                    approve ({
-                        contract: SUSD_CONTRACT,
-                        spender: LENDING_POOL_CONTRACT.address,
-                        amount: lendAmount,
-                    })
-                )}
-                onTransactionConfirmed={() => (
-                    setLendingState("approved")
-                )}
-                style={{
-                    width: "100%",
-                    marginTop: "10px",
-                }}
-                >Confirm Deposit</TransactionButton>
-
-</div>
-                                    <div style={{
-                                        width: "100%"
-                                    }}>
-
-                                <TransactionButton style={{width:"100%", marginTop:"10px",}}
-                                 transaction={() => (
-                                    prepareContractCall({
-                                        contract: LENDING_POOL_CONTRACT,
-                                        method: "withdraw",
-                                        params: [SUSD_CONTRACT.address, (toWei(lendAmount.toString()))],
-                                    })
-                                 )}
-                                 onTransactionConfirmed={() => {
-                                    setLendAmount(100);
-                                    setLendingState("init");
-                                    refetchSUSDBalance;
-                                    refetchcollateralBalance;
-                                    setIsLending(false);
-                                 }}
-                                 
-                                >
-                                    Withdraw
-                                </TransactionButton>
-
-                                </div>
-                                </div>
-                
-                </>
-
-            ) : (
-                <>
-                <p style={{marginTop: "10px"}}>Lend</p>
-                <h1 style={{ marginTop: "5px"}}>{lendAmount.toLocaleString()} sUSD
-                                           
-                    </h1>
-                
-
-
-                <TransactionButton style={{width:"100%", marginTop:"10px",}}
+                        <TransactionButton style={{width:"100%", marginTop:"10px",}}
                  transaction={() => (
                     prepareContractCall({
                         contract: LENDING_POOL_CONTRACT,
-                        method: "deposit",
-                        params: [SUSD_CONTRACT.address, (toWei(lendAmount.toString()))],
+                        method: "borrow",
+                        params: [TOKEN_CONTRACT.address, (toWei(borrowAmount.toString()))],
                     })
                  )}
                  onTransactionConfirmed={() => {
                     setDepositAmount(100);
-                    setLendingState("init");
-                    refetchSUSDBalance;
+                    refetchSOSBalance;
                     refetchcollateralBalance;
-                    setIsLending(false);
+                    setIsBorrowing(false);
                  }}
                  
                 >
-                    Lend
+                    Borrow
                 </TransactionButton>
+                    </div>
+                                    <div style={{
+                                        width: "100%"
+                                    }}>
+                                        <TransactionButton style={{width:"100%", marginTop:"10px",}}
+                                         transaction={() => (
+                                            prepareContractCall({
+                                                contract: LENDING_POOL_CONTRACT,
+                                                method: "withdrawCollateral",
+                                                params: [TOKEN_CONTRACT.address, (toWei(borrowAmount.toString()))],
+                                            })
+                                         )}
+                                         onTransactionConfirmed={() => {
+                                            setBorrowAmount(100);
+                                            refetchSOSBalance;
+                                            refetchcollateralBalance;
+                                            setIsBorrowing(false);
+                                         }}
+                                        >
+                                            Withdraw Collateral
+                                        </TransactionButton>
+                                    </div>
+                </div>
                 
 
+           
+              
                 
-                </>
                 
-            ) } 
+
+             
             
             
             
@@ -1236,7 +1206,7 @@ padding: "5px"
                 width: "100%",
                 height: "42px"
                 }}
-                onClick={() => setIsLending(false)}
+                onClick={() => setIsBorrowing(false)}
     
                     >
 
@@ -1254,5 +1224,5 @@ padding: "5px"
                     </div>
                     )
                     };
-                    export default SusdLend;
+                    export default SosBorrow;
                     
