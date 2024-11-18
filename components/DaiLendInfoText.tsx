@@ -24,10 +24,10 @@ const DaiLendInfoText: React.FC = () => {
     const [userCollateralBalance, setUserCollateralBalance] = useState<number | null>(null); // Collateral balance in the asset
 
     const [borrowableAmount, setBorrowableAmount] = useState<number | null>(null);
-    const collateralizationRatio = 115; // Example ratio, can be adjusted
+    const collateralizationRatio = 120; // Example ratio, can be adjusted
 
     const [borrowLimitInAsset, setBorrowLimitInAsset] = useState<string | null>(null);
-    const liquidationThreshold = 85; // Example liquidation threshold in percentage
+    const liquidationThreshold = 80; // Example liquidation threshold in percentage
 
     const decimals = 18;
 
@@ -548,7 +548,7 @@ useEffect(() => {
                                     color: "GrayText",
                                     marginLeft: "5px"}}
                                     >
-                                        {borrowLimitAsset ? `${borrowLimitAsset} DAI` : "Calculating..."}
+                                        {borrowLimitAsset ? `${borrowLimitAsset} DAI` : "N/A"}
                                 </span>
                              </p>
                             
@@ -596,7 +596,7 @@ useEffect(() => {
                                     color: "GrayText",
                                     marginTop: "12px"}}>
                             
-                            {healthFactor ? healthFactor : "Calculating..."}
+                            {healthFactor ? healthFactor : "N/A"}
 
  </p>
                             

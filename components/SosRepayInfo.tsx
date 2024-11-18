@@ -2,32 +2,32 @@
 
 import Image from "next/image";
 import { useEffect, useState } from "react";
-import Weth from "../public/Weth.svg"
+import SOS from "../public/SOS.svg"
 
 import ETH from "../public/ethereum-eth-logo.svg"
 
 
 import { approve, balanceOf } from "thirdweb/extensions/erc20";
 import { TransactionButton, useActiveAccount, useReadContract, useWalletBalance } from "thirdweb/react";
-import { STAKE_CONTRACT, WETH_CONTRACT, LENDING_POOL_CONTRACT, client, chain } from "../utils/constants";
+import { STAKE_CONTRACT, TOKEN_CONTRACT, LENDING_POOL_CONTRACT, client, chain } from "../utils/constants";
 import { prepareContractCall, readContract, toEther, toWei } from "thirdweb";
 import { addEvent } from "thirdweb/extensions/farcaster/keyRegistry";
 import Link from "next/link";
 import { getEthBalance } from "thirdweb/extensions/multicall3";
 
 
-const WethLendInfo: React.FC = () => {
+const SosRepayInfo: React.FC = () => {
 
     const account = useActiveAccount();
 
-    const WethContract = "0x4200000000000000000000000000000000000006";
+    const SOSContract = "0x50c5725949A6F0c72E6C4a641F24049A917DB0Cb";
     const [userCollateralBalance, setUserCollateralBalance] = useState<number | null>(null); // Collateral balance in the asset
 
     const [borrowableAmount, setBorrowableAmount] = useState<number | null>(null);
-    const collateralizationRatio = 150; // Example ratio, can be adjusted
+    const collateralizationRatio = 115; // Example ratio, can be adjusted
 
     const [borrowLimitInAsset, setBorrowLimitInAsset] = useState<string | null>(null);
-    const liquidationThreshold = 50; // Example liquidation threshold in percentage
+    const liquidationThreshold = 85; // Example liquidation threshold in percentage
 
     const decimals = 18;
 
@@ -53,7 +53,7 @@ const WethLendInfo: React.FC = () => {
         {
             contract: LENDING_POOL_CONTRACT,
             method: "getAccountBalances",
-            params: [ account?.address || "" , WethContract],
+            params: [ account?.address || "" , SOSContract],
             queryOptions: {
                 enabled: !!account
             }
@@ -91,6 +91,22 @@ const WethLendInfo: React.FC = () => {
             }
        
     });
+
+    const { 
+        data: incurredInterest, 
+        isLoading: loadingIncurredInterest,
+        refetch: refetchIncurredInterest,
+    } = useReadContract (
+        
+        {
+            contract: LENDING_POOL_CONTRACT,
+            method: "getInterestIncurred",
+            params: [ account?.address || "" , SOSContract],
+            queryOptions: {
+                enabled: !!account
+            }
+       
+    });
     
 
     
@@ -104,7 +120,7 @@ const WethLendInfo: React.FC = () => {
         {
             contract: LENDING_POOL_CONTRACT,
             method: "getCollateralValueInUSD",
-            params: [ account?.address || "" , WethContract],
+            params: [ account?.address || "" , SOSContract],
             queryOptions: {
                 enabled: !!account
             }
@@ -120,7 +136,7 @@ const WethLendInfo: React.FC = () => {
         {
             contract: LENDING_POOL_CONTRACT,
             method: "getPrice",
-            params: [WethContract],
+            params: [SOSContract],
             queryOptions: {
                 enabled: !!account
             }
@@ -136,7 +152,7 @@ const WethLendInfo: React.FC = () => {
         {
             contract: LENDING_POOL_CONTRACT,
             method: "totalDeposits",
-            params: [WethContract],
+            params: [SOSContract],
             queryOptions: {
                 enabled: !!account
             }
@@ -152,7 +168,7 @@ const WethLendInfo: React.FC = () => {
         {
             contract: LENDING_POOL_CONTRACT,
             method: "totalBorrows",
-            params: [WethContract],
+            params: [SOSContract],
             queryOptions: {
                 enabled: !!account
             }
@@ -168,7 +184,7 @@ const WethLendInfo: React.FC = () => {
         {
             contract: LENDING_POOL_CONTRACT,
             method: "calculateInterestRate",
-            params: [WethContract],
+            params: [SOSContract],
             queryOptions: {
                 enabled: !!account
             }
@@ -193,13 +209,13 @@ const WethLendInfo: React.FC = () => {
 
 
     const { 
-        data: WethBalance, 
-        isLoading: loadingWethBalance,
-        refetch: refetchWethBalance
+        data: SOSBalance, 
+        isLoading: loadingSOSBalance,
+        refetch: refetchSOSBalance
     } = useReadContract (
         balanceOf,
         {
-            contract: WETH_CONTRACT,
+            contract: TOKEN_CONTRACT,
             address: account?.address || "",
             queryOptions: {
                 enabled: !!account
@@ -216,7 +232,7 @@ const WethLendInfo: React.FC = () => {
         {
             contract: LENDING_POOL_CONTRACT,
             method: "depositFeePercent",
-            params: [WethContract],
+            params: [SOSContract],
             queryOptions: {
                 enabled: !!account
             }
@@ -232,7 +248,7 @@ const WethLendInfo: React.FC = () => {
         {
             contract: LENDING_POOL_CONTRACT,
             method: "withdrawFeePercent",
-            params: [WethContract],
+            params: [SOSContract],
             queryOptions: {
                 enabled: !!account
             }
@@ -256,8 +272,8 @@ const WethLendInfo: React.FC = () => {
     : null;
     
 
-    const WethBalanceInUSD = WethBalance && assetPrice 
-    ? (truncate(toEther(WethBalance), 4) * Number(assetPrice)).toFixed(2) 
+    const SOSBalanceInUSD = SOSBalance && assetPrice 
+    ? (truncate(toEther(SOSBalance), 4) * Number(assetPrice)).toFixed(2) 
     : "0.00";
 
     const totalDepositsInUSD = totalDeposits && assetPrice 
@@ -406,7 +422,7 @@ useEffect(() => {
                     }}>
                                 {totalDeposits 
     ? `${formatNumber(truncate(toEther(totalDeposits), 2))}`
-    : "0.0"} WETH
+    : "0.0"} SOS
                     <span style={{
                     fontSize: "10px",
                     color: "GrayText",
@@ -454,7 +470,7 @@ useEffect(() => {
                     }}>
                                 {totalBorrows 
     ? `${formatNumber(truncate(toEther(totalBorrows), 2))}`
-    : "0.0"} WETH
+    : "0.0"} SOS
                     <span style={{
                     fontSize: "10px",
                     color: "GrayText",
@@ -490,7 +506,7 @@ useEffect(() => {
             textAlign: "left"
             
         }} >
-            <p style={{marginTop: "5px", fontSize: "12px"}}>Lending APR:</p>
+            <p style={{marginTop: "5px", fontSize: "12px"}}>Borrow APR:</p>
             
         </div>
         <div style={{
@@ -503,7 +519,46 @@ useEffect(() => {
                         marginTop: "5px",
                         fontSize: "12px"
                     }}>
-                                {depositAPR}%
+                                {apr}%
+                            </p>
+            
+        </div>
+
+                            
+
+        
+        
+        
+        </div>
+        <div style={{
+            display: "flex",
+            flexDirection: "row",
+            width: "100%",
+            justifyContent: "space-between",
+        }}>
+
+            
+        
+        <div style={{
+            display: "flex",
+            flexDirection: "column",
+            textAlign: "left"
+            
+        }} >
+            <p style={{marginTop: "5px", fontSize: "12px"}}>LTV Ratio:</p>
+            
+        </div>
+        <div style={{
+            display: "flex",
+            flexDirection: "column",
+            textAlign: "right"
+            
+        }} >
+            <p style={{
+                        marginTop: "5px",
+                        fontSize: "12px"
+                    }}>
+                                {collateralizationRatio}%
                             </p>
             
         </div>
@@ -548,7 +603,7 @@ useEffect(() => {
                                     color: "GrayText",
                                     marginLeft: "5px"}}
                                     >
-                                        {borrowLimitAsset ? `${borrowLimitAsset} WETH` : "N/A"}
+                                        {borrowLimitAsset ? `${borrowLimitAsset} SOS` : "N/A"}
                                 </span>
                              </p>
                             
@@ -604,9 +659,46 @@ useEffect(() => {
                         
                         </div>
 
+                        <div style={{
+                            display: "flex",
+                            flexDirection: "row",
+                            width: "100%",
+                            justifyContent: "space-between",
+                        }}>
+
+                            
+                        
+                        <div style={{
+                            display: "flex",
+                            flexDirection: "column",
+                            textAlign: "left"
+                            
+                        }} >
+                            <p style={{marginTop: "5px", fontSize: "12px"}}>Loan Interest:</p>
+                            
+                        </div>
+                        <div style={{
+                            display: "flex",
+                            flexDirection: "column",
+                            textAlign: "right"
+                            
+                        }} >
+                            <p style={{
+                                    fontSize: "10px",
+                                    color: "GrayText",
+                                    marginTop: "5px"}}>
+                            
+                            {truncate(toEther(incurredInterest!),4) } SOS
+
+ </p>
+                            
+                        </div>
+                        
+                        </div>
+
         </div>
         
         
 )
 };
-export default WethLendInfo;
+export default SosRepayInfo;

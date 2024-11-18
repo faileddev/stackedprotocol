@@ -22,13 +22,13 @@ const SusdColCard: React.FC = () => {
 
     const account = useActiveAccount();
     const [healthFactor, setHealthFactor] = useState<string | null>(null);
-    const liquidationThreshold = 80; // Example liquidation threshold in percentage
+    const liquidationThreshold = 90; // Example liquidation threshold in percentage
 
     const SusdContract = "0x65F74FD58284dAEaFaC89d122Fb0566E0629C2a0";
     const [userCollateralBalance, setUserCollateralBalance] = useState<number | null>(null); // Collateral balance in the asset
 
     const [borrowableAmount, setBorrowableAmount] = useState<number | null>(null);
-    const collateralizationRatio = 150; // Example ratio, can be adjusted
+    const collateralizationRatio = 105; // Example ratio, can be adjusted
 
     const [borrowLimitInAsset, setBorrowLimitInAsset] = useState<string | null>(null);
 
@@ -274,7 +274,7 @@ function calculateBorrowLimitInAsset(
                                         <p style={{fontSize: "10px"}}>
                                            Wallet Balance:
                                                                     </p>
-                                              <h3>{formatNumber(truncate(toEther(SusdBalance!),4)) }<span style={{fontSize: "10px"}}> Susd</span>
+                                              <h3>{formatNumber(truncate(toEther(SusdBalance!),4)) }<span style={{fontSize: "10px"}}> sUSD</span>
                                             </h3>
                                             <p style={{
                                                             fontSize: "10px",
@@ -295,7 +295,7 @@ function calculateBorrowLimitInAsset(
                                                 formatNumber(truncate(toEther(collateralBalance[0]), 4))
                                                 :
                                                 '...'
-                                            }<span style={{fontSize: "10px"}}> Susd</span>
+                                            }<span style={{fontSize: "10px"}}> sUSD</span>
                                                        </h3>
                                                        <p style={{
                                                         fontSize: "10px",
@@ -325,7 +325,7 @@ function calculateBorrowLimitInAsset(
                                             formatNumber(truncate(toEther(collateralBalance[2]), 4)) 
                                             : 
                                             '...'
-                                        }<span style={{fontSize: "10px"}}> Susd</span>
+                                        }<span style={{fontSize: "10px"}}> sUSD</span>
                                                    </h3>
                                                    <p style={{
                                                     fontSize: "10px",
@@ -349,7 +349,7 @@ function calculateBorrowLimitInAsset(
                                             formatNumber(truncate(toEther(collateralBalance[1]), 2)) 
                                             : 
                                             '...'
-                                        }<span style={{fontSize: "10px"}}> Susd</span>
+                                        }<span style={{fontSize: "10px"}}> sUSD</span>
                                                    </h3>
                                                    <p style={{
                                                     fontSize: "10px",

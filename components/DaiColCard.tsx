@@ -26,7 +26,7 @@ const DaiColCard: React.FC = () => {
     const [userCollateralBalance, setUserCollateralBalance] = useState<number | null>(null); // Collateral balance in the asset
 
     const [borrowableAmount, setBorrowableAmount] = useState<number | null>(null);
-    const collateralizationRatio = 150; // Example ratio, can be adjusted
+    const collateralizationRatio = 120; // Example ratio, can be adjusted
 
     const [borrowLimitInAsset, setBorrowLimitInAsset] = useState<string | null>(null);
 

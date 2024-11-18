@@ -25,10 +25,10 @@ const SusdLendInfo: React.FC = () => {
     const [userCollateralBalance, setUserCollateralBalance] = useState<number | null>(null); // Collateral balance in the asset
 
     const [borrowableAmount, setBorrowableAmount] = useState<number | null>(null);
-    const collateralizationRatio = 115; // Example ratio, can be adjusted
+    const collateralizationRatio = 105; // Example ratio, can be adjusted
 
     const [borrowLimitInAsset, setBorrowLimitInAsset] = useState<string | null>(null);
-    const liquidationThreshold = 85; // Example liquidation threshold in percentage
+    const liquidationThreshold = 90; // Example liquidation threshold in percentage
 
     const decimals = 18;
 
@@ -407,7 +407,7 @@ useEffect(() => {
                     }}>
                                 {totalDeposits 
     ? `${formatNumber(truncate(toEther(totalDeposits), 2))}`
-    : "0.0"} Susd
+    : "0.0"} sUSD
                     <span style={{
                     fontSize: "10px",
                     color: "GrayText",
@@ -455,7 +455,7 @@ useEffect(() => {
                     }}>
                                 {totalBorrows 
     ? `${formatNumber(truncate(toEther(totalBorrows), 2))}`
-    : "0.0"} Susd
+    : "0.0"} sUSD
                     <span style={{
                     fontSize: "10px",
                     color: "GrayText",
@@ -549,7 +549,7 @@ useEffect(() => {
                                     color: "GrayText",
                                     marginLeft: "5px"}}
                                     >
-                                        {borrowLimitAsset ? `${borrowLimitAsset} Susd` : "Calculating..."}
+                                        {borrowLimitAsset ? `${borrowLimitAsset} sUSD` : "N/A"}
                                 </span>
                              </p>
                             
@@ -597,7 +597,7 @@ useEffect(() => {
                                     color: "GrayText",
                                     marginTop: "12px"}}>
                             
-                            {healthFactor ? healthFactor : "Calculating..."}
+                            {healthFactor ? healthFactor : "N/A"}
 
  </p>
                             

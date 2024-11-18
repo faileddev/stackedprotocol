@@ -20,7 +20,7 @@ import { getEthBalance } from "thirdweb/extensions/multicall3";
 const SOSLendInfo: React.FC = () => {
 
     const account = useActiveAccount();
-
+    
     const SOSContract = "0xf63Fca327C555408819e26eDAc30F83E55a119f4";
     const [userCollateralBalance, setUserCollateralBalance] = useState<number | null>(null); // Collateral balance in the asset
 

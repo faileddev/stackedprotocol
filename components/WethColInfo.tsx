@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { useEffect, useState } from "react";
-import Weth from "../public/Weth.svg"
+import WETH from "../public/WETH.svg"
 
 import ETH from "../public/ethereum-eth-logo.svg"
 
@@ -16,11 +16,11 @@ import Link from "next/link";
 import { getEthBalance } from "thirdweb/extensions/multicall3";
 
 
-const WethLendInfo: React.FC = () => {
+const WethColInfo: React.FC = () => {
 
     const account = useActiveAccount();
 
-    const WethContract = "0x4200000000000000000000000000000000000006";
+    const WETHContract = "0x4200000000000000000000000000000000000006";
     const [userCollateralBalance, setUserCollateralBalance] = useState<number | null>(null); // Collateral balance in the asset
 
     const [borrowableAmount, setBorrowableAmount] = useState<number | null>(null);
@@ -53,7 +53,7 @@ const WethLendInfo: React.FC = () => {
         {
             contract: LENDING_POOL_CONTRACT,
             method: "getAccountBalances",
-            params: [ account?.address || "" , WethContract],
+            params: [ account?.address || "" , WETHContract],
             queryOptions: {
                 enabled: !!account
             }
@@ -104,7 +104,7 @@ const WethLendInfo: React.FC = () => {
         {
             contract: LENDING_POOL_CONTRACT,
             method: "getCollateralValueInUSD",
-            params: [ account?.address || "" , WethContract],
+            params: [ account?.address || "" , WETHContract],
             queryOptions: {
                 enabled: !!account
             }
@@ -120,7 +120,7 @@ const WethLendInfo: React.FC = () => {
         {
             contract: LENDING_POOL_CONTRACT,
             method: "getPrice",
-            params: [WethContract],
+            params: [WETHContract],
             queryOptions: {
                 enabled: !!account
             }
@@ -136,7 +136,7 @@ const WethLendInfo: React.FC = () => {
         {
             contract: LENDING_POOL_CONTRACT,
             method: "totalDeposits",
-            params: [WethContract],
+            params: [WETHContract],
             queryOptions: {
                 enabled: !!account
             }
@@ -152,7 +152,7 @@ const WethLendInfo: React.FC = () => {
         {
             contract: LENDING_POOL_CONTRACT,
             method: "totalBorrows",
-            params: [WethContract],
+            params: [WETHContract],
             queryOptions: {
                 enabled: !!account
             }
@@ -168,7 +168,7 @@ const WethLendInfo: React.FC = () => {
         {
             contract: LENDING_POOL_CONTRACT,
             method: "calculateInterestRate",
-            params: [WethContract],
+            params: [WETHContract],
             queryOptions: {
                 enabled: !!account
             }
@@ -193,9 +193,9 @@ const WethLendInfo: React.FC = () => {
 
 
     const { 
-        data: WethBalance, 
-        isLoading: loadingWethBalance,
-        refetch: refetchWethBalance
+        data: WETHBalance, 
+        isLoading: loadingWETHBalance,
+        refetch: refetchWETHBalance
     } = useReadContract (
         balanceOf,
         {
@@ -216,7 +216,7 @@ const WethLendInfo: React.FC = () => {
         {
             contract: LENDING_POOL_CONTRACT,
             method: "depositFeePercent",
-            params: [WethContract],
+            params: [WETHContract],
             queryOptions: {
                 enabled: !!account
             }
@@ -232,7 +232,7 @@ const WethLendInfo: React.FC = () => {
         {
             contract: LENDING_POOL_CONTRACT,
             method: "withdrawFeePercent",
-            params: [WethContract],
+            params: [WETHContract],
             queryOptions: {
                 enabled: !!account
             }
@@ -256,8 +256,8 @@ const WethLendInfo: React.FC = () => {
     : null;
     
 
-    const WethBalanceInUSD = WethBalance && assetPrice 
-    ? (truncate(toEther(WethBalance), 4) * Number(assetPrice)).toFixed(2) 
+    const WETHBalanceInUSD = WETHBalance && assetPrice 
+    ? (truncate(toEther(WETHBalance), 4) * Number(assetPrice)).toFixed(2) 
     : "0.00";
 
     const totalDepositsInUSD = totalDeposits && assetPrice 
@@ -490,7 +490,7 @@ useEffect(() => {
             textAlign: "left"
             
         }} >
-            <p style={{marginTop: "5px", fontSize: "12px"}}>Lending APR:</p>
+            <p style={{marginTop: "5px", fontSize: "12px"}}>Borrow APR:</p>
             
         </div>
         <div style={{
@@ -503,7 +503,46 @@ useEffect(() => {
                         marginTop: "5px",
                         fontSize: "12px"
                     }}>
-                                {depositAPR}%
+                                {apr}%
+                            </p>
+            
+        </div>
+
+                            
+
+        
+        
+        
+        </div>
+        <div style={{
+            display: "flex",
+            flexDirection: "row",
+            width: "100%",
+            justifyContent: "space-between",
+        }}>
+
+            
+        
+        <div style={{
+            display: "flex",
+            flexDirection: "column",
+            textAlign: "left"
+            
+        }} >
+            <p style={{marginTop: "5px", fontSize: "12px"}}>LTV Ratio:</p>
+            
+        </div>
+        <div style={{
+            display: "flex",
+            flexDirection: "column",
+            textAlign: "right"
+            
+        }} >
+            <p style={{
+                        marginTop: "5px",
+                        fontSize: "12px"
+                    }}>
+                                {collateralizationRatio}%
                             </p>
             
         </div>
@@ -609,4 +648,4 @@ useEffect(() => {
         
 )
 };
-export default WethLendInfo;
+export default WethColInfo;

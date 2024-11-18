@@ -19,6 +19,8 @@ import SOSLendCard from "./SOSLendCard";
 import SOSLendInfo from "./SOSLendInfo";
 import SOSColCard from "./SOSColCard";
 import SOSRepayCard from "./SOSRepayCard";
+import SosColInfo from "./SosColInfo";
+import SosRepayInfo from "./SosRepayInfo";
 
 
 const SosLend: React.FC = () => {
@@ -593,185 +595,11 @@ function calculateBorrowLimitInAsset(
                                 <>
                                 
 
-<div style={{
-                            display: "flex",
-                            flexDirection: "row",
-                            width: "100%",
-                            marginTop: "10px",
-                            justifyContent: "space-between",
-                        }}>
-
-                            
-                        
-                        <div style={{
-                            display: "flex",
-                            flexDirection: "column",
-                            textAlign: "left"
-                            
-                        }} >
-                            <p style={{marginTop: "10px"}}>Wallet Balance:</p>
-                            
-                        </div>
-                        <div style={{
-                            display: "flex",
-                            flexDirection: "column",
-                            textAlign: "right"
-                            
-                        }} >
-                            <p style={{
-                                        marginTop: "10px"
-                                    }}>
-                                        {truncate(toEther(SOSBalance!),4).toLocaleString() } SOS
-                                    
-                                        <span style={{
-                                    fontSize: "10px",
-                                    color: "GrayText",
-                                    marginLeft: "5px"}}
-                                    >
-                                        ~ ${SOSBalanceInUSD}
-                                        </span>
-                                    
-                                    </p>
-                            
-                        </div>
-                        
-                        </div>
-
-                        <div style={{
-                            display: "flex",
-                            flexDirection: "row",
-                            width: "100%",
-                            justifyContent: "space-between",
-                        }}>
-
-                            
-                        
-                        <div style={{
-                            display: "flex",
-                            flexDirection: "column",
-                            textAlign: "left"
-                            
-                        }} >
-                            <p style={{marginTop: "10px"}}>Deposited Balance:</p>
-                            
-                        </div>
-                        <div style={{
-                            display: "flex",
-                            flexDirection: "column",
-                            textAlign: "right"
-                            
-                        }} >
-                            <p style={{
-                                        marginTop: "10px"
-                                    }}>
-                                                {collateralBalance ?
-                                                    truncate(toEther(collateralBalance[0] * BigInt(1)).toString(), 4).toLocaleString()
-                                                    :
-                                                    '0.00'
-                                                } SOS
-                                        <span style={{
-                                    fontSize: "10px",
-                                    color: "GrayText",
-                                    marginLeft: "5px"}}
-                                    >
-                                        ~ ${depositedBalanceInUSD}
-                                        </span>
-                                            </p>
-                            
-                        </div>
-
-                        
-                        
-                        
-                        
-                        </div>
-
-
-                            
-                            <div style={{
-                            display: "flex",
-                            flexDirection: "row",
-                            width: "100%",
-                            justifyContent: "space-between",
-                        }}>
-
-                            
-                        
-                        <div style={{
-                            display: "flex",
-                            flexDirection: "column",
-                            textAlign: "left"
-                            
-                        }} >
-                            <p style={{marginTop: "10px"}}>Collaterized Balance:</p>
-                            
-                        </div>
-                        <div style={{
-                            display: "flex",
-                            flexDirection: "column",
-                            textAlign: "right"
-                            
-                        }} >
-                            <p style={{
-                                        marginTop: "10px"
-                                    }}>
-                                                {collateralBalance ?
-                                                    truncate(toEther(collateralBalance[2] * BigInt(1)).toString(), 4).toLocaleString()
-                                                    :
-                                                    '0.00'
-                                                } SOS
-                                    <span style={{
-                                    fontSize: "10px",
-                                    color: "GrayText",
-                                    marginLeft: "5px"}}
-                                    >
-
-                                       ~ ${formattedCollateralDollarValue}
-                                    </span>
-                                            </p>
-                            
-                        </div>
-
-                        
-                        
-                        
-                        </div>
-                        <div style={{
-                            display: "flex",
-                            flexDirection: "row",
-                            width: "100%",
-                            justifyContent: "space-between",
-                        }}>
-
-                            
-                        
-                        <div style={{
-                            display: "flex",
-                            flexDirection: "column",
-                            textAlign: "left"
-                            
-                        }} >
-                            <p style={{marginTop: "10px"}}>Collaterization Ratio:</p>
-                            
-                        </div>
-                        <div style={{
-                            display: "flex",
-                            flexDirection: "column",
-                            textAlign: "right"
-                            
-                        }} >
-                            <p style={{
-                                        marginTop: "10px"
-                                    }}>
-                                                {collateralizationRatio}%
-                                            </p>
-                            
-                        </div>
-
-                        
-                        
-                        
-                        </div>
+                                <div style={{
+                    width: "100%"
+                }}>
+                <SosColInfo />
+                </div>
                         <div 
                 style={{
                     display: "flex",
@@ -797,7 +625,7 @@ function calculateBorrowLimitInAsset(
                                     width: "100%",
                                     marginTop: "10px",
                                 }}
-                                >Set Approval</TransactionButton>
+                                >Confirm Deposit</TransactionButton>
 
                                 </div>
                                 <div style={{
@@ -1026,185 +854,11 @@ function calculateBorrowLimitInAsset(
                                 <>
                                 
 
-<div style={{
-                            display: "flex",
-                            flexDirection: "row",
-                            width: "100%",
-                            marginTop: "10px",
-                            justifyContent: "space-between",
-                        }}>
-
-                            
-                        
-                        <div style={{
-                            display: "flex",
-                            flexDirection: "column",
-                            textAlign: "left"
-                            
-                        }} >
-                            <p style={{marginTop: "10px"}}>Wallet Balance:</p>
-                            
-                        </div>
-                        <div style={{
-                            display: "flex",
-                            flexDirection: "column",
-                            textAlign: "right"
-                            
-                        }} >
-                            <p style={{
-                                        marginTop: "10px"
-                                    }}>
-                                        {truncate(toEther(SOSBalance!),4).toLocaleString() } SOS
-                                    
-                                        <span style={{
-                                    fontSize: "10px",
-                                    color: "GrayText",
-                                    marginLeft: "5px"}}
-                                    >
-                                        ~ ${SOSBalanceInUSD}
-                                        </span>
-                                    
-                                    </p>
-                            
-                        </div>
-                        
-                        </div>
-
-                        <div style={{
-                            display: "flex",
-                            flexDirection: "row",
-                            width: "100%",
-                            justifyContent: "space-between",
-                        }}>
-
-                            
-                        
-                        <div style={{
-                            display: "flex",
-                            flexDirection: "column",
-                            textAlign: "left"
-                            
-                        }} >
-                            <p style={{marginTop: "10px"}}>Deposited Balance:</p>
-                            
-                        </div>
-                        <div style={{
-                            display: "flex",
-                            flexDirection: "column",
-                            textAlign: "right"
-                            
-                        }} >
-                            <p style={{
-                                        marginTop: "10px"
-                                    }}>
-                                                {collateralBalance ?
-                                                    truncate(toEther(collateralBalance[0] * BigInt(1)).toString(), 4).toLocaleString()
-                                                    :
-                                                    '0.00'
-                                                } SOS
-                                        <span style={{
-                                    fontSize: "10px",
-                                    color: "GrayText",
-                                    marginLeft: "5px"}}
-                                    >
-                                        ~ ${depositedBalanceInUSD}
-                                        </span>
-                                            </p>
-                            
-                        </div>
-
-                        
-                        
-                        
-                        
-                        </div>
-
-
-                            
-                            <div style={{
-                            display: "flex",
-                            flexDirection: "row",
-                            width: "100%",
-                            justifyContent: "space-between",
-                        }}>
-
-                            
-                        
-                        <div style={{
-                            display: "flex",
-                            flexDirection: "column",
-                            textAlign: "left"
-                            
-                        }} >
-                            <p style={{marginTop: "10px"}}>Collaterized Balance:</p>
-                            
-                        </div>
-                        <div style={{
-                            display: "flex",
-                            flexDirection: "column",
-                            textAlign: "right"
-                            
-                        }} >
-                            <p style={{
-                                        marginTop: "10px"
-                                    }}>
-                                                {collateralBalance ?
-                                                    truncate(toEther(collateralBalance[2] * BigInt(1)).toString(), 4).toLocaleString()
-                                                    :
-                                                    '0.00'
-                                                } SOS
-                                    <span style={{
-                                    fontSize: "10px",
-                                    color: "GrayText",
-                                    marginLeft: "5px"}}
-                                    >
-
-                                       ~ ${formattedCollateralDollarValue}
-                                    </span>
-                                            </p>
-                            
-                        </div>
-
-                        
-                        
-                        
-                        </div>
-                        <div style={{
-                            display: "flex",
-                            flexDirection: "row",
-                            width: "100%",
-                            justifyContent: "space-between",
-                        }}>
-
-                            
-                        
-                        <div style={{
-                            display: "flex",
-                            flexDirection: "column",
-                            textAlign: "left"
-                            
-                        }} >
-                            <p style={{marginTop: "10px"}}>Loan Interest:</p>
-                            
-                        </div>
-                        <div style={{
-                            display: "flex",
-                            flexDirection: "column",
-                            textAlign: "right"
-                            
-                        }} >
-                            <p style={{
-                                        marginTop: "10px"
-                                    }}>
-                                                {truncate(toEther(incurredInterest!),4) } SOS
-                                            </p>
-                            
-                        </div>
-
-                        
-                        
-                        
-                        </div>
+                                <div style={{
+                    width: "100%"
+                }}>
+                <SosRepayInfo />
+                </div>
 
                         <div 
                 style={{
