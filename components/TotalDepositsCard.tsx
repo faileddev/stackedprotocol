@@ -366,7 +366,7 @@ const TotalDepositsCard: React.FC = () => {
 
                                                 
                             
-                                      <h1>{Number(formattedTotalDepositsInUSD!).toLocaleString()}</h1>
+                                      <h2>{Number(formattedTotalDepositsInUSD!).toLocaleString()}</h2>
                                       
                         </div>
                         

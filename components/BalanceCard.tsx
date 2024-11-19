@@ -176,11 +176,11 @@ const balanceCard: React.FC = () => {
                                                 src={sUSD}
                                                 alt='logo'
                                                 />
-                            {loadingNetworth ? (
-                                      <h1>...</h1>
-                                     ) : (
-                                      <h1>{truncate(toEther(Networth!),2).toLocaleString()}</h1>
-                                     )}
+                            <h2>
+  {Networth && !isNaN(Number(toEther(Networth)))
+    ? truncate(Number(toEther(Networth)), 2).toLocaleString()
+    : "0.00"}
+</h2>
                         </div>
                         {loadingNetworth ? (
                                       <p>...</p>

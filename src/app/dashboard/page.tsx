@@ -8,7 +8,7 @@ import Userinfo from "../../../components/userInfo";
 import Mint from "../../../components/mint";
 import { ConnectButton, useActiveAccount, useReadContract } from "thirdweb/react";
 import { chain, client, LENDING_POOL_CONTRACT } from "../../../utils/constants";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import Header from "../../../components/Header";
 import BalanceCard from "../../../components/BalanceCard";
@@ -25,9 +25,9 @@ const WETHContract = "0x4200000000000000000000000000000000000006";
 const DAIContract = "0x50c5725949A6F0c72E6C4a641F24049A917DB0Cb";
 
   const { 
-    data: interestRate, 
-    isLoading: loadingInterestRate,
-    refetch: refetchInterestRate,
+    data: susdInterestRate, 
+    isLoading: loadingSusdInterestRate,
+    refetch: refetchSusdInterestRate,
 } = useReadContract (
     
     {
@@ -40,20 +40,243 @@ const DAIContract = "0x50c5725949A6F0c72E6C4a641F24049A917DB0Cb";
    
 });
 
+const { 
+  data: sosInterestRate, 
+  isLoading: loadingSosInterestRate,
+  refetch: refetchSosInterestRate,
+} = useReadContract (
+  
+  {
+      contract: LENDING_POOL_CONTRACT,
+      method: "calculateInterestRate",
+      params: [SosContract],
+      queryOptions: {
+          enabled: !!account
+      }
+ 
+});
+
+const { 
+  data: wethInterestRate, 
+  isLoading: loadingWethnterestRate,
+  refetch: refetchWethInterestRate,
+} = useReadContract (
+  
+  {
+      contract: LENDING_POOL_CONTRACT,
+      method: "calculateInterestRate",
+      params: [WETHContract],
+      queryOptions: {
+          enabled: !!account
+      }
+ 
+});
+
+const { 
+  data: daiInterestRate, 
+  isLoading: loadingDaiInterestRate,
+  refetch: refetchDaiInterestRate,
+} = useReadContract (
+  
+  {
+      contract: LENDING_POOL_CONTRACT,
+      method: "calculateInterestRate",
+      params: [DAIContract],
+      queryOptions: {
+          enabled: !!account
+      }
+ 
+});
+
+const { 
+  data: totalSusdDeposits, 
+  isLoading: loadingTotalSusdDeposits,
+  refetch: refetchTotalSusdDeposits,
+} = useReadContract (
+  
+  {
+      contract: LENDING_POOL_CONTRACT,
+      method: "totalDeposits",
+      params: [sUSDContract],
+      queryOptions: {
+          enabled: !!account
+      }
+ 
+});
+
+const { 
+  data: totalSusdBorrows, 
+  isLoading: loadingTotalSusdBorrows,
+  refetch: refetchTotalSusdBorrows,
+} = useReadContract (
+  
+  {
+      contract: LENDING_POOL_CONTRACT,
+      method: "totalBorrows",
+      params: [sUSDContract],
+      queryOptions: {
+          enabled: !!account
+      }
+ 
+});
+
+const { 
+  data: totalSosDeposits, 
+  isLoading: loadingTotalSosDeposits,
+  refetch: refetchTotalSosDeposits,
+} = useReadContract (
+  
+  {
+      contract: LENDING_POOL_CONTRACT,
+      method: "totalDeposits",
+      params: [SosContract],
+      queryOptions: {
+          enabled: !!account
+      }
+ 
+});
+
+const { 
+  data: totalDaiDeposits, 
+  isLoading: loadingTotalDaiDeposits,
+  refetch: refetchTotalDaiDeposits,
+} = useReadContract (
+  
+  {
+      contract: LENDING_POOL_CONTRACT,
+      method: "totalDeposits",
+      params: [DAIContract],
+      queryOptions: {
+          enabled: !!account
+      }
+ 
+});
+
+const { 
+  data: totalWethDeposits, 
+  isLoading: loadingTotalWethDeposits,
+  refetch: refetchTotalWethDeposits,
+} = useReadContract (
+  
+  {
+      contract: LENDING_POOL_CONTRACT,
+      method: "totalDeposits",
+      params: [WETHContract],
+      queryOptions: {
+          enabled: !!account
+      }
+ 
+});
+
+const { 
+  data: totalSosBorrows, 
+  isLoading: loadingTotalSosBorrows,
+  refetch: refetchTotalSosBorrows,
+} = useReadContract (
+  
+  {
+      contract: LENDING_POOL_CONTRACT,
+      method: "totalBorrows",
+      params: [SosContract],
+      queryOptions: {
+          enabled: !!account
+      }
+ 
+});
+
+const { 
+  data: totalDaiBorrows, 
+  isLoading: loadingTotalDaiBorrows,
+  refetch: refetchTotalDaiBorrows,
+} = useReadContract (
+  
+  {
+      contract: LENDING_POOL_CONTRACT,
+      method: "totalDeposits",
+      params: [DAIContract],
+      queryOptions: {
+          enabled: !!account
+      }
+ 
+});
+
+const { 
+  data: totalWethBorrows, 
+  isLoading: loadingTotalWethBorrows,
+  refetch: refetchTotalWethBorrows,
+} = useReadContract (
+  
+  {
+      contract: LENDING_POOL_CONTRACT,
+      method: "totalDeposits",
+      params: [WETHContract],
+      queryOptions: {
+          enabled: !!account
+      }
+ 
+});
+
+
 
 const secondsInYear = 365 * 24 * 60 * 60; // Number of seconds in a year
 const precisionFactor = 1e18; // Scaling factor
-  const apr = interestRate 
-    ? ((Number(interestRate) / precisionFactor) * secondsInYear * 100).toFixed(2)
-    : "0.00";    
+
+const susdApr = susdInterestRate
+? (Number(susdInterestRate) / precisionFactor) * secondsInYear * 100
+: 0.0;   
+
+const sosApr = sosInterestRate
+? (Number(sosInterestRate) / precisionFactor) * secondsInYear * 100
+: 0.0;   
+
+const wethApr = wethInterestRate
+? (Number(wethInterestRate) / precisionFactor) * secondsInYear * 100
+: 0.0;   
+
+const daiApr = daiInterestRate
+? (Number(daiInterestRate) / precisionFactor) * secondsInYear * 100
+: 0.0;   
+
+const [susdDepositAPR, setSusdDepositAPR] = useState<number>(0.0);
+const [sosDepositAPR, setSosDepositAPR] = useState<number>(0.0);
+const [daiDepositAPR, setDaiDepositAPR] = useState<number>(0.0);
+const [wethDepositAPR, setWethDepositAPR] = useState<number>(0.0);
+
+useEffect(() => {
+  if (totalSusdDeposits && totalSusdBorrows && susdApr) {
+    const calculatedAPR = (Number(totalSusdBorrows) / Number(totalSusdDeposits)) * Number(susdApr);
+    setSusdDepositAPR(Math.round(calculatedAPR * 100) / 100); // Rounded number with 2 decimal places
+  }
+}, [totalSusdDeposits, totalSusdBorrows, susdApr])
+
+useEffect(() => {
+  if (totalSosDeposits && totalSosBorrows && sosApr) {
+    const sosCalculatedAPR = (Number(totalSosBorrows) / Number(totalSosDeposits)) * Number(sosApr);
+    setSosDepositAPR(Math.round(sosCalculatedAPR * 100) / 100); // Rounded number with 2 decimal places
+  }
+}, [totalSosDeposits, totalSosBorrows, sosApr])
+
+useEffect(() => {
+  if (totalWethDeposits && totalWethBorrows && wethApr) {
+    const wethCalculatedAPR = (Number(totalWethBorrows) / Number(totalWethDeposits)) * Number(wethApr);
+    setWethDepositAPR(Math.round(wethCalculatedAPR * 100) / 100); // Rounded number with 2 decimal places
+  }
+}, [totalWethDeposits, totalWethBorrows, wethApr])
+
+useEffect(() => {
+  if (totalDaiDeposits && totalDaiBorrows && daiApr) {
+    const daiCalculatedAPR = (Number(totalDaiBorrows) / Number(totalDaiDeposits)) * Number(daiApr);
+    setDaiDepositAPR(Math.round(daiCalculatedAPR * 100) / 100); // Rounded number with 2 decimal places
+  }
+}, [totalSusdDeposits, totalSusdBorrows, susdApr])
 
   const assets = [
-    { name: "ETH", image: "/ethereum-eth-logo.svg", supplyApy: 2.5, borrowApy: 4.5, isCollateral: true },
+    { name: "ETH", image: "/ethereum-eth-logo.svg", supplyApy: wethDepositAPR, borrowApy: wethApr, isCollateral: true },
     { name: "WBTC", image: "/wrapped-bitcoin-wbtc-logo.svg", supplyApy: 0.0, borrowApy: 0.0, isCollateral: false },
-    { name: "DAI", image: "/multi-collateral-dai-dai-logo.svg", supplyApy: 3.0, borrowApy: 5.0, isCollateral: false },
-    { name: "USDC", image: "/usd-coin-usdc-logo.svg", supplyApy: 1.5, borrowApy: 3.5, isCollateral: true },
-    { name: "SOS", image: "/red logo.svg", supplyApy: 1.5, borrowApy: 3.5, isCollateral: true },
-    { name: "sUSD", image: "/susdcoin.svg", supplyApy: 1.5, borrowApy: {apr}, isCollateral: true },
+    { name: "DAI", image: "/multi-collateral-dai-dai-logo.svg", supplyApy: daiDepositAPR, borrowApy: daiApr, isCollateral: true },
+    { name: "USDC", image: "/usd-coin-usdc-logo.svg", supplyApy: 0.0, borrowApy: 0.0, isCollateral: false },
+    { name: "SOS", image: "/red logo.svg", supplyApy: sosDepositAPR, borrowApy: sosApr, isCollateral: true },
+    { name: "sUSD", image: "/susdcoin.svg", supplyApy: susdDepositAPR, borrowApy: susdApr, isCollateral: true },
 ];
 
   return (
