@@ -296,6 +296,7 @@ function calculateBorrowLimitInAsset(
                                     <div style={{
                                         border: "solid",
                                         borderColor: "grey",
+                                        borderWidth: "1px",
                                         padding: "10px",
                                         borderRadius: "5px",
                                         width: "100%",
@@ -319,6 +320,7 @@ function calculateBorrowLimitInAsset(
                                         
                                         border: "solid",
                                         borderColor: "grey",
+                                        borderWidth: "1px",
                                         padding: "10px",
                                         borderRadius: "5px",
                                         width: "100%",
@@ -355,9 +357,10 @@ function calculateBorrowLimitInAsset(
                                                    
                             
                                      <div style={{
-                                    marginTop: "10px",
+                                    marginTop: "4px",
                                     border: "solid",
                                     borderColor: "grey",
+                                    borderWidth: "1px",
                                     padding: "10px",
                                     borderRadius: "5px",
                                     width: "100%",
@@ -388,9 +391,10 @@ function calculateBorrowLimitInAsset(
                                    
                                 
                                      <div style={{
-                                    marginTop: "10px",
+                                    marginTop: "4px",
                                     border: "solid",
                                     borderColor: "grey",
+                                    borderWidth: "1px",
                                     padding: "10px",
                                     borderRadius: "5px",
                                     width: "100%",

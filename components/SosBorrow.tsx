@@ -410,23 +410,9 @@ function calculateBorrowLimitInAsset(
                                 marginTop: "20px",
                                 marginBottom: "5px",
                             }}>
+                                
                                 <button style={{
                                                     marginRight: "5px",
-                                                    padding: "10px",
-                                                    backgroundColor: "#efefef",
-                                                    border: "none",
-                                                    borderRadius: "6px",
-                                                    color: "#333",
-                                                    fontSize: "1rem",
-                                                    cursor: "pointer",
-                                                    width: "100%",}}
-                                                    
-                                                    onClick={() => setIsBorrowing(true)}
-                                                    >
-                                    Borrow
-                                </button>
-                                <button style={{
-                                                    marginLeft: "5px",
                                                     padding: "10px",
                                                     backgroundColor: "#efefef",
                                                     border: "none",
@@ -439,6 +425,21 @@ function calculateBorrowLimitInAsset(
                                                     
                                                     >
                                     Deposit Collateral
+                                </button>
+                                <button style={{
+                                                    marginLeft: "5px",
+                                                    padding: "10px",
+                                                    backgroundColor: "#efefef",
+                                                    border: "none",
+                                                    borderRadius: "6px",
+                                                    color: "#333",
+                                                    fontSize: "1rem",
+                                                    cursor: "pointer",
+                                                    width: "100%",}}
+                                                    
+                                                    onClick={() => setIsBorrowing(true)}
+                                                    >
+                                    Borrow
                                 </button>
                                 
                             </div>

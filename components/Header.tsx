@@ -54,13 +54,13 @@ const Header: React.FC = () => {
         onClick={toggleDropdown}
         aria-expanded={isDropdownOpen}
       >
-        Staking
+        Staking <span className={styles.soon}> comming soon</span>
       </button>
       {isDropdownOpen && (
         <div className={styles.dropdownMenu}>
-          <Link href="/staking/sosstaking">SOS Staking</Link>
-          <Link href="/staking/lp">LP Staking</Link>
-          <Link href="/staking/stakesusd">sUSD Staking</Link>
+          <Link href="/sUSD/">SOS Staking</Link>
+          <Link href="/sUSD/">LP Staking</Link>
+          <Link href="/sUSD/">sUSD Staking</Link>
         </div>
       )}
     </div>

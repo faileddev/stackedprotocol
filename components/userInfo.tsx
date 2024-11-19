@@ -94,7 +94,7 @@ const Userinfo: React.FC = () => {
         
         <div style={{ display: "flex", flexDirection: "row", justifyContent: "space-between", padding: "20px", textAlign: "center", borderRadius: "10px", border: "solid", borderColor: "GrayText", borderWidth: "1px", marginTop: "20px" }}>
           <p>Total Supply</p>
-          {loadingVaultTotalSupply ? <h3>...</h3> : <h3>{truncate(toEther(vaultTotalSupply!), 2)}<span style={{ fontSize: "8px" }}> sUSD</span></h3>}
+          {loadingVaultTotalSupply ? <h3>...</h3> : <h3>{Number(truncate(toEther(vaultTotalSupply!), 2)).toLocaleString()}<span style={{ fontSize: "8px" }}> sUSD</span></h3>}
         </div>
 
         <div style={{ display: "flex", flexDirection: "row", justifyContent: "space-between", padding: "20px", textAlign: "center", borderRadius: "10px", border: "solid", borderColor: "GrayText", borderWidth: "1px", marginTop: "20px" }}>

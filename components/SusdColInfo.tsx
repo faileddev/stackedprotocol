@@ -327,22 +327,33 @@ const [borrowLimitAsset, setBorrowLimitAsset] = useState<string>("0.00");
 
 useEffect(() => {
     if (totalCollateralUSD && collateralizationRatio && assetPrice && totalDebtUSD !== undefined) {
-        const scaledCollateralUSD = Number(toEther(totalCollateralUSD)); // Convert from wei to human-readable
-        const borrowLimitUSD = (scaledCollateralUSD * collateralizationRatio) / 100; // Borrow limit in USD
-        const availableBorrowLimitUSD = Math.max(borrowLimitUSD - Number(toEther(totalDebtUSD)), 0); // Subtract debt and ensure non-negative
-        const availableBorrowLimitAsset = availableBorrowLimitUSD / Number(assetPrice); // Borrow limit in the asset
+        // Convert values to numbers
+        const collateralBalance = Number(toEther(totalCollateralUSD)); // Collateral balance in USD
+        const totalDebt = Number(toEther(totalDebtUSD)); // Total debt in USD
+        const crDecimal = collateralizationRatio / 100; // Convert CR from percentage to decimal
 
-        console.log('Total Collateral USD:', scaledCollateralUSD);
-        console.log('Borrow Limit USD:', borrowLimitUSD);
-        console.log('Total Debt USD:', Number(toEther(totalDebtUSD)));
+        // Max borrow limit based on collateralization ratio
+        const maxBorrowLimitUSD = collateralBalance / crDecimal;
+
+        // Available borrow limit after accounting for existing debt
+        const availableBorrowLimitUSD = Math.max(maxBorrowLimitUSD - totalDebt, 0);
+
+        // Borrow limit in terms of the asset
+        const availableBorrowLimitAsset = availableBorrowLimitUSD / Number(assetPrice);
+
+        // Log for debugging
+        console.log('Collateral Balance USD:', collateralBalance);
+        console.log('Collateralization Ratio (Decimal):', crDecimal);
+        console.log('Max Borrow Limit USD:', maxBorrowLimitUSD);
+        console.log('Total Debt USD:', totalDebt);
         console.log('Available Borrow Limit USD:', availableBorrowLimitUSD);
         console.log('Available Borrow Limit in Asset:', availableBorrowLimitAsset);
 
-        setBorrowLimitUSD(availableBorrowLimitUSD.toFixed(2)); // Update available borrow limit in USD
-        setBorrowLimitAsset(availableBorrowLimitAsset.toFixed(4)); // Update available borrow limit in asset
+        // Update state
+        setBorrowLimitUSD(availableBorrowLimitUSD.toFixed(2)); // Borrow limit in USD
+        setBorrowLimitAsset(availableBorrowLimitAsset.toFixed(4)); // Borrow limit in the asset
     }
 }, [totalCollateralUSD, collateralizationRatio, assetPrice, totalDebtUSD]);
-
 
     function formatNumber(value: number): string {
         if (value >= 1_000_000_000) {

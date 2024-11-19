@@ -669,7 +669,24 @@ function calculateBorrowLimitInAsset(
                                     </h1>
                                 
          
-         
+                                    <TransactionButton style={{width:"100%", marginTop:"10px",}}
+                                 transaction={() => (
+                                    prepareContractCall({
+                                        contract: LENDING_POOL_CONTRACT,
+                                        method: "depositCollateral",
+                                        params: [SUSD_CONTRACT.address, (toWei(depositAmount.toString()))],
+                                    })
+                                 )}
+                                 onTransactionConfirmed={() => {
+                                    setDepositAmount(100);
+                                    setDepositingState("init");
+                                    refetchcollateralBalance;
+                                    setIsDepositing(false);
+                                 }}
+                                 
+                                >
+                                    Deposit Collateral
+                                </TransactionButton>
                                 
                                 
 
