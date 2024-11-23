@@ -73,7 +73,21 @@ const SusdLendPageCard: React.FC = () => {
 
     
 
-    
+    const { 
+        data: colRiskParams, 
+        isLoading: loadingColRiskParams,
+        refetch: refetchColRiskParams,
+    } = useReadContract (
+        
+        {
+            contract: LENDING_POOL_CONTRACT,
+            method: "collateralRiskParams",
+            params: [SusdContract],
+            queryOptions: {
+                enabled: !!account
+            }
+       
+    });
 
     
 
@@ -269,6 +283,8 @@ useEffect(() => {
 
 // Function to calculate borrow limit in the asset
 
+const collateralRiskPercentage = colRiskParams ? (Number(colRiskParams[0]) / 1e16) + "%" : "Loading...";
+
 
 function formatNumber(value: number): string {
     if (value >= 1_000_000_000) {
@@ -449,9 +465,16 @@ function formatNumber(value: number): string {
                     }}>
                         LTV Ratio:
                     </p>
-                    <h3>
-                    {collateralizationRatio}%
-                                       </h3>
+                    <h3 style={{
+                                        marginLeft: "5px"
+                                    }}>
+                                                {collateralRiskPercentage ?
+                                                    (collateralRiskPercentage)
+                                                    :
+                                                    '0.00'
+                                                } 
+                                    
+                                            </h3>
                                        </div>
             
             </div>

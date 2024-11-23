@@ -68,7 +68,23 @@ const WethRepayInfo: React.FC = () => {
         
         {
             contract: LENDING_POOL_CONTRACT,
-            method: "getTotalCollateralInUSD",
+            method: "getTotalCollateralValue",
+            params: [ account?.address || "" , ],
+            queryOptions: {
+                enabled: !!account
+            }
+       
+    });
+
+    const { 
+        data: borrowingPower, 
+        isLoading: loadingBorrowingPower,
+        refetch: refetchBorrowingPower,
+    } = useReadContract (
+        
+        {
+            contract: LENDING_POOL_CONTRACT,
+            method: "getBorrowingPower",
             params: [ account?.address || "" , ],
             queryOptions: {
                 enabled: !!account

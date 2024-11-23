@@ -20,7 +20,7 @@ const sUSDContractABI = [{"inputs":[{"internalType":"address","name":"_initialOw
 const sUSDStakeContract = "";
 const sUSDStakeContractABI = "";
 
-const stackedAssetsContract = "0x51Fc6cf91af03dAa97e1769563744380DF714be1";
+const stackedAssetsContract = "0xD1BA3d9b01591060b6635f125c8ddF66eBD511Bd";
 const stackedAssetsContractABI = [
   {
     "inputs": [
@@ -408,6 +408,35 @@ const stackedAssetsContractABI = [
         "type": "address"
       }
     ],
+    "name": "collateralRiskParams",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "ltv",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "liquidationThreshold",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "liquidationBonus",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
     "name": "collateralizationRatios",
     "outputs": [
       {
@@ -551,6 +580,25 @@ const stackedAssetsContractABI = [
         "internalType": "address",
         "name": "user",
         "type": "address"
+      }
+    ],
+    "name": "getBorrowingPower",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "totalBorrowingPowerUSD",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "user",
+        "type": "address"
       },
       {
         "internalType": "address",
@@ -658,11 +706,11 @@ const stackedAssetsContractABI = [
         "type": "address"
       }
     ],
-    "name": "getTotalCollateralInUSD",
+    "name": "getTotalCollateralValue",
     "outputs": [
       {
         "internalType": "uint256",
-        "name": "",
+        "name": "totalCollateralUSD",
         "type": "uint256"
       }
     ],
@@ -702,6 +750,35 @@ const stackedAssetsContractABI = [
         "internalType": "uint256",
         "name": "",
         "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "user",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "borrowAsset",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "borrowAmount",
+        "type": "uint256"
+      }
+    ],
+    "name": "isBorrowable",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
       }
     ],
     "stateMutability": "view",
@@ -751,14 +828,38 @@ const stackedAssetsContractABI = [
         "internalType": "address",
         "name": "user",
         "type": "address"
+      }
+    ],
+    "name": "isLiquidatable",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "user",
+        "type": "address"
       },
       {
         "internalType": "address",
-        "name": "borrowAsset",
+        "name": "asset",
         "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "withdrawAmount",
+        "type": "uint256"
       }
     ],
-    "name": "isCollateralized",
+    "name": "isSafeAfterWithdrawal",
     "outputs": [
       {
         "internalType": "bool",
@@ -778,7 +879,7 @@ const stackedAssetsContractABI = [
       },
       {
         "internalType": "address",
-        "name": "asset",
+        "name": "repayAsset",
         "type": "address"
       },
       {
@@ -858,6 +959,34 @@ const stackedAssetsContractABI = [
       }
     ],
     "name": "repay",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "asset",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "ltv",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "liquidationThreshold",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "liquidationBonus",
+        "type": "uint256"
+      }
+    ],
+    "name": "setCollateralRiskParams",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

@@ -182,15 +182,11 @@ const balanceCard: React.FC = () => {
     : "0.00"}
 </h2>
                         </div>
-                        {loadingNetworth ? (
-                                      <p>...</p>
-                                     ) : (
-                                      <p 
-                                      style={{
-                                        fontSize: "10px",
-                                        color: "GrayText",
-                                      }}>~ {truncate(toEther(Networth!),2).toLocaleString()} USD</p>
-                                     )}
+                        <p>
+  {Networth && !isNaN(Number(toEther(Networth)))
+    ? truncate(Number(toEther(Networth)), 2).toLocaleString()
+    : "0.00"}
+</p>
                         </div>
                         
                         
