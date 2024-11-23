@@ -68,7 +68,7 @@ const SosColInfo: React.FC = () => {
         
         {
             contract: LENDING_POOL_CONTRACT,
-            method: "getTotalCollateralInUSD",
+            method: "getTotalCollateralValue",
             params: [ account?.address || "" , ],
             queryOptions: {
                 enabled: !!account

@@ -68,7 +68,7 @@ const SosRepayInfo: React.FC = () => {
         
         {
             contract: LENDING_POOL_CONTRACT,
-            method: "getTotalCollateralInUSD",
+            method: "getTotalCollateralValue",
             params: [ account?.address || "" , ],
             queryOptions: {
                 enabled: !!account
@@ -153,6 +153,22 @@ const SosRepayInfo: React.FC = () => {
             contract: LENDING_POOL_CONTRACT,
             method: "totalDeposits",
             params: [SOSContract],
+            queryOptions: {
+                enabled: !!account
+            }
+       
+    });
+
+    const { 
+        data: borrowingPower, 
+        isLoading: loadingBorrowingPower,
+        refetch: refetchBorrowingPower,
+    } = useReadContract (
+        
+        {
+            contract: LENDING_POOL_CONTRACT,
+            method: "getBorrowingPower",
+            params: [ account?.address || "" , ],
             queryOptions: {
                 enabled: !!account
             }
@@ -598,7 +614,7 @@ useEffect(() => {
                             textAlign: "left"
                             
                         }} >
-                            <p style={{marginTop: "5px", fontSize: "12px"}}>Borrow Limit:</p>
+                            <p style={{marginTop: "5px", fontSize: "12px"}}>Borrowing Power:</p>
                             
                         </div>
                         <div style={{
@@ -609,7 +625,9 @@ useEffect(() => {
                         }} >
                             <p style={{marginTop: "5px", fontSize: "12px"}}>
                             
-                            ~ ${Number(borrowLimitUSD).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                            ~ ${borrowingPower 
+    ? `${truncate(toEther(borrowingPower), 2)}`
+    : "0.0"}
 
                                 <span style={{
                                     fontSize: "8px",
