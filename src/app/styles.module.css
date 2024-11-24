@@ -1,0 +1,20 @@
+.container {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+  }
+
+
+  @media (max-width: 600px) {
+
+    .container {
+      flex-direction: column;
+    }
+
+    .imageContainer {
+      order: -1; /* Move the image above the content */
+  }
+
+}
