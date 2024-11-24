@@ -72,7 +72,21 @@ const SOSLendCard: React.FC = () => {
     });
 
     
-
+    const { 
+        data: colRiskParams, 
+        isLoading: loadingColRiskParams,
+        refetch: refetchColRiskParams,
+    } = useReadContract (
+        
+        {
+            contract: LENDING_POOL_CONTRACT,
+            method: "collateralRiskParams",
+            params: [SOSContract],
+            queryOptions: {
+                enabled: !!account
+            }
+       
+    });
     
 
     
@@ -221,7 +235,8 @@ const SOSLendCard: React.FC = () => {
        
     });
 
-    
+    const collateralRiskPercentage = colRiskParams ? (Number(colRiskParams[0]) / 1e16) + "%" : "Loading...";
+
 
     const secondsInYear = 365 * 24 * 60 * 60; // Number of seconds in a year
     const precisionFactor = 1e18; // Scaling factor
@@ -450,7 +465,11 @@ function formatNumber(value: number): string {
                         LTV Ratio:
                     </p>
                     <h3>
-                    {collateralizationRatio}%
+                    {collateralRiskPercentage ?
+                                                    (collateralRiskPercentage)
+                                                    :
+                                                    '0.00'
+                                                } 
                                        </h3>
                                        </div>
             

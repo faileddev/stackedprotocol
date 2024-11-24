@@ -76,6 +76,8 @@ const SusdColInfo: React.FC = () => {
        
     });
 
+    
+
     const { 
         data: totalDebtUSD, 
         isLoading: loadingTotalDebtUSD,
@@ -92,7 +94,21 @@ const SusdColInfo: React.FC = () => {
        
     });
     
-
+    const { 
+        data: borrowingPower, 
+        isLoading: loadingBorrowingPower,
+        refetch: refetchBorrowingPower,
+    } = useReadContract (
+        
+        {
+            contract: LENDING_POOL_CONTRACT,
+            method: "getBorrowingPower",
+            params: [ account?.address || "" , ],
+            queryOptions: {
+                enabled: !!account
+            }
+       
+    });
     
 
     const { 
@@ -159,6 +175,8 @@ const SusdColInfo: React.FC = () => {
        
     });
 
+    
+
     const { 
         data: interestRate, 
         isLoading: loadingInterestRate,
@@ -208,6 +226,22 @@ const SusdColInfo: React.FC = () => {
     });
 
     const { 
+        data: colRiskParams, 
+        isLoading: loadingColRiskParams,
+        refetch: refetchColRiskParams,
+    } = useReadContract (
+        
+        {
+            contract: LENDING_POOL_CONTRACT,
+            method: "collateralRiskParams",
+            params: [sUSDContract],
+            queryOptions: {
+                enabled: !!account
+            }
+       
+    });
+
+    const { 
         data: depositFee, 
         isLoading: loadingDepositFee,
         refetch: refetchDepositFee,
@@ -247,7 +281,8 @@ const SusdColInfo: React.FC = () => {
     const apr = interestRate 
     ? ((Number(interestRate) / precisionFactor) * secondsInYear * 100).toFixed(2)
     : "0.00";    
-    
+    const collateralRiskPercentage = colRiskParams ? (Number(colRiskParams[0]) / 1e16) + "%" : "Loading...";
+
     const formattedCollateralDollarValue = (Number(CollateralDollarValue) / 1e18).toFixed(2);
     const currentTime = Math.floor(Date.now() / 1000);  // Current time in seconds
     const assetPrice = rawAssetPrice ? (Number(rawAssetPrice) / 1e8).toFixed(6) : null; // Divide by 1e8 and format to 2 decimals
@@ -287,16 +322,42 @@ useEffect(() => {
     : "0.00";
 
 
+    const calculateBorrowLimitInAsset = (borrowingPower: number, assetPrice: number): number => {
+        if (assetPrice === 0) {
+            throw new Error("Asset price cannot be zero");
+        }
+    
+        return borrowingPower / assetPrice;
+    };
+
+
+    useEffect(() => {
+        try {
+            if (borrowingPower && assetPrice) {
+                // Convert BigInt values to number
+                const borrowPowerNum = Number(borrowingPower);
+                const assetPriceNum = Number(assetPrice);
+    
+                const borrowLimit = calculateBorrowLimitInAsset(borrowPowerNum, assetPriceNum);
+                setBorrowLimitInAsset(borrowLimit.toFixed(6)); // Display up to 6 decimal places
+            }
+        } catch (error) {
+            console.error("Error calculating borrow limit:", error);
+            setBorrowLimitInAsset("Error");
+        }
+    }, [borrowingPower, assetPrice]);
+
+
     const calculateHealthFactor = (
-        totalCollateralUSD: number,
+        borrowingPower: number,
         totalDebtUSD: number,
-        liquidationThreshold: number
+        
     ): string => {
         // No debt, user is safe
         if (totalDebtUSD === 0) return "Safe - No Loans Yet";
     
-        const liquidationThresholdDecimal = liquidationThreshold / 100; // Convert to decimal
-        const healthFactor = (totalCollateralUSD * liquidationThresholdDecimal) / totalDebtUSD;
+        
+        const healthFactor = borrowingPower / totalDebtUSD;
     
         if (healthFactor >= 1.5) {
             return `Healthy (${healthFactor.toFixed(2)})`; // Safe range
@@ -308,52 +369,22 @@ useEffect(() => {
     };
     
     useEffect(() => {
-        if (totalCollateralUSD && totalDebtUSD) {
-            const collateralValueUSD = Number(toEther(totalCollateralUSD)); // Convert BigInt to number
+        if (borrowingPower && totalDebtUSD) {
+            const borrowPowerUSD = Number(toEther(borrowingPower)); // Convert BigInt to number
             const debtValueUSD = Number(toEther(totalDebtUSD)); // Convert BigInt to number
+    
+            // Calculate health factor using the new function
             const calculatedHealthFactor = calculateHealthFactor(
-                collateralValueUSD,
-                debtValueUSD,
-                liquidationThreshold || 80 // Default liquidation threshold to 80%
+                borrowPowerUSD,
+                debtValueUSD
             );
+    
             console.log("Updated Health Factor:", calculatedHealthFactor);
-            setHealthFactor(calculatedHealthFactor); // Update state
+    
+            // Update state with the calculated health factor
+            setHealthFactor(calculatedHealthFactor);
         }
-    }, [totalCollateralUSD, totalDebtUSD, liquidationThreshold]);
-
-    const [borrowLimitUSD, setBorrowLimitUSD] = useState<string>("0.00");
-const [borrowLimitAsset, setBorrowLimitAsset] = useState<string>("0.00");
-
-
-useEffect(() => {
-    if (totalCollateralUSD && collateralizationRatio && assetPrice && totalDebtUSD !== undefined) {
-        // Convert values to numbers
-        const collateralBalance = Number(toEther(totalCollateralUSD)); // Collateral balance in USD
-        const totalDebt = Number(toEther(totalDebtUSD)); // Total debt in USD
-        const crDecimal = collateralizationRatio / 100; // Convert CR from percentage to decimal
-
-        // Max borrow limit based on collateralization ratio
-        const maxBorrowLimitUSD = collateralBalance / crDecimal;
-
-        // Available borrow limit after accounting for existing debt
-        const availableBorrowLimitUSD = Math.max(maxBorrowLimitUSD - totalDebt, 0);
-
-        // Borrow limit in terms of the asset
-        const availableBorrowLimitAsset = availableBorrowLimitUSD / Number(assetPrice);
-
-        // Log for debugging
-        console.log('Collateral Balance USD:', collateralBalance);
-        console.log('Collateralization Ratio (Decimal):', crDecimal);
-        console.log('Max Borrow Limit USD:', maxBorrowLimitUSD);
-        console.log('Total Debt USD:', totalDebt);
-        console.log('Available Borrow Limit USD:', availableBorrowLimitUSD);
-        console.log('Available Borrow Limit in Asset:', availableBorrowLimitAsset);
-
-        // Update state
-        setBorrowLimitUSD(availableBorrowLimitUSD.toFixed(2)); // Borrow limit in USD
-        setBorrowLimitAsset(availableBorrowLimitAsset.toFixed(4)); // Borrow limit in the asset
-    }
-}, [totalCollateralUSD, collateralizationRatio, assetPrice, totalDebtUSD]);
+    }, [borrowingPower, totalDebtUSD]);
 
     function formatNumber(value: number): string {
         if (value >= 1_000_000_000) {
@@ -553,7 +584,11 @@ useEffect(() => {
                         marginTop: "5px",
                         fontSize: "12px"
                     }}>
-                                {collateralizationRatio}%
+                                {collateralRiskPercentage ?
+                                                    (collateralRiskPercentage)
+                                                    :
+                                                    '0.00'
+                                                }
                             </p>
             
         </div>
@@ -580,7 +615,7 @@ useEffect(() => {
                             textAlign: "left"
                             
                         }} >
-                            <p style={{marginTop: "5px", fontSize: "12px"}}>Borrow Limit:</p>
+                            <p style={{marginTop: "5px", fontSize: "12px"}}>Borrowing Power:</p>
                             
                         </div>
                         <div style={{
@@ -591,14 +626,17 @@ useEffect(() => {
                         }} >
                             <p style={{marginTop: "5px", fontSize: "12px"}}>
                             
-                            ~ ${Number(borrowLimitUSD).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                            ~ ${borrowingPower 
+                                    ? `${truncate(toEther(borrowingPower), 2)}`
+                                    : "0.0"}
 
                                 <span style={{
                                     fontSize: "8px",
                                     color: "GrayText",
                                     marginLeft: "5px"}}
                                     >
-                                        {borrowLimitAsset ? `${borrowLimitAsset} sUSD` : "N/A"}
+                                        {borrowLimitInAsset ? `${truncate(toEther(BigInt(Number(borrowLimitInAsset)) * BigInt(1)),2)} sUSD` : "N/A"}
+                                        
                                 </span>
                              </p>
                             

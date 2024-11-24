@@ -203,6 +203,22 @@ const DaiLendInfo: React.FC = () => {
        
     });    
 
+    const { 
+        data: borrowingPower, 
+        isLoading: loadingBorrowingPower,
+        refetch: refetchBorrowingPower,
+    } = useReadContract (
+        
+        {
+            contract: LENDING_POOL_CONTRACT,
+            method: "getBorrowingPower",
+            params: [ account?.address || "" , ],
+            queryOptions: {
+                enabled: !!account
+            }
+       
+    });
+
     
 
     const secondsInYear = 365 * 24 * 60 * 60; // Number of seconds in a year
